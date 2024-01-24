@@ -22,6 +22,7 @@ import { redirect } from "next/navigation";
 import { Router } from "next/router";
 type Props = {};
 import { useRouter } from 'next/navigation'
+import { PasswordInput } from "@/components/ui/password-input";
  
 export default function Login(props: Props) {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function Login(props: Props) {
 									<FormLabel>Email</FormLabel>
 									<FormControl>
 										<Input
-											placeholder="shadcn"
+											placeholder="Enter your email"
 											{...field}
 										/>
 									</FormControl>
@@ -82,9 +83,8 @@ export default function Login(props: Props) {
 								<FormItem>
 									<FormLabel>Password</FormLabel>
 									<FormControl>
-										<Input
-											type="password"
-											placeholder="shadcn"
+										<PasswordInput
+											placeholder="Enter your password"
 											{...field}
 										/>
 									</FormControl>

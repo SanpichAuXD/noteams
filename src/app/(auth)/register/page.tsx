@@ -18,9 +18,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
 type Props = {};
 
 const Register = (props: Props) => {
+	const [showPass, setShowPass] = React.useState(false);
+	const [showCfPass, setShowCfPass] = React.useState(false);
 	const form = useForm<z.infer<typeof registerSchema>>({
 		resolver: zodResolver(registerSchema),
 		defaultValues: {
@@ -57,7 +61,7 @@ const Register = (props: Props) => {
 										<FormLabel>Username</FormLabel>
 										<FormControl>
 											<Input
-												placeholder="shadcn"
+												placeholder="Enter your username"
 												{...field}
 											/>
 										</FormControl>
@@ -74,7 +78,7 @@ const Register = (props: Props) => {
 										<FormLabel>Email</FormLabel>
 										<FormControl>
 											<Input
-												placeholder="shadcn"
+												placeholder="Enter your email"
 												{...field}
 											/>
 										</FormControl>
@@ -91,9 +95,8 @@ const Register = (props: Props) => {
 								<FormItem>
 									<FormLabel>Password</FormLabel>
 									<FormControl>
-										<Input
-											type="password"
-											placeholder="shadcn"
+									<PasswordInput
+											placeholder="Enter your password"
 											{...field}
 										/>
 									</FormControl>
@@ -107,11 +110,10 @@ const Register = (props: Props) => {
 							name="cfpassword"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Password</FormLabel>
+									<FormLabel>Confirm Password</FormLabel>
 									<FormControl>
-										<Input
-											type="password"
-											placeholder="shadcn"
+									<PasswordInput
+											placeholder="Enter your password"
 											{...field}
 										/>
 									</FormControl>
@@ -120,7 +122,7 @@ const Register = (props: Props) => {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit" className="w-full">Register</Button>
+						<Button type="submit" className="w-full" onClick={()=> console.log(form.getValues("cfpassword"), form.getValues("password"))}>Register</Button>
             <p className="text-center ">Already Have Account ? <Link href={"/login"} className="font-bold"> Login</Link></p>
 					</form>
 				</Form>

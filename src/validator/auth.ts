@@ -6,12 +6,16 @@ const registerSchema = z.object({
     password: z.string().min(8).max(255),
     cfpassword : z.string().min(8).max(255),
     email: z.string().email(),
-    }).refine((data)=> {
-        data.cfpassword === data.password;
-    }, {
-        message: "Password not match",
-        path: ["cfpassword"],
-    });
+    }).superRefine(({ cfpassword, password }, ctx) => {
+        console.log(cfpassword, password)
+        if (cfpassword !== password) {
+          ctx.addIssue({
+            code: "custom",
+            message: "The passwords did not match",
+            path: ["cfpassword"],
+          });
+        }
+      });
     
 
 const loginSchema = z.object({
