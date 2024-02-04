@@ -41,7 +41,7 @@ export default function Login(props: Props) {
 	}
 	return (
 		<div className="flex h-screen">
-			<div className="flex bg-slate-100 justify-center items-center w-1/2 h-full ">
+			<div className="flex  bg-slate-100 justify-center items-center w-4/5 h-full ">
 				<Image
 					src={RegVector}
 					alt="reg-vector"
@@ -54,7 +54,7 @@ export default function Login(props: Props) {
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
-						className="space-y-5"
+						className="space-y-5 px-[15%]"
 					>
 						{/* <div className="flex justify-between gap-4"> */}
 

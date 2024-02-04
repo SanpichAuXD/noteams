@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+const plugin = require("tailwindcss/plugin");
 
 const config = {
   darkMode: ["class"],
@@ -74,7 +75,22 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    
+    // Define a Tailwind CSS plugin
+    plugin(({ addVariant, e }: any) => {
+      // Add a custom variant, "sidebar-expanded"
+      addVariant("sidebar-expanded", ({ modifySelectors, separator }: any) => {
+        modifySelectors(
+          ({ className }: any) =>
+            // Modify selectors to apply the custom variant
+            `.sidebar-expanded .${e(
+              `sidebar-expanded${separator}${className}`
+            )}`
+        );
+      });
+    }),
+  ],
 } satisfies Config
 
 export default config
