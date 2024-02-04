@@ -4,6 +4,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Calendar, User, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Define the Sidenav component
 export default function Sidenav({ sidebarOpen, setSidebarOpen }: any) {
@@ -83,41 +85,28 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: any) {
           >
             Actions
           </p>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                onClick={() => setSidebarOpen(false)}
-                href="/jobs"
-                className="flex items-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100  font-light hover:font-semibold"
-              >
-                <span className="flex items-center text-base text-gray-900 rounded-lg hover:bg-gray-100  hover:font-semibold">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                    />
-                  </svg>
-
-                  <span
-                    className={`${
-                      sidebarExpanded
-                        ? "lg:hidden opacity-0 ml-0"
-                        : "opacity-100 ml-3 block"
-                    }ml-3 whitespace-nowrap `}
-                  >
-                    Write a Blog
-                  </span>
-                </span>
-              </Link>
-            </li>
+          <ul className="text-center space-y-2">           
+            <NavItem
+              href="/kanban"
+              icon={<Users size={40} />}
+              label="Teams"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="/kanban"
+              icon={<User size={40} />}
+              label="Profile"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="#"
+              icon={<Calendar size={40} />}
+              label="Calendar"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
           </ul>
         </div>
 
@@ -148,3 +137,40 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: any) {
     </>
   );
 }
+
+type NavItemProps = {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  setSidebarOpen: (open: boolean) => void;
+  sidebarExpanded: boolean;
+};
+
+const NavItem = ({ href, icon, label, setSidebarOpen, sidebarExpanded }: NavItemProps) => {
+  return (
+    <li>
+    <Link
+      onClick={() => setSidebarOpen(false)}
+      href={href}
+      className={cn("flex items-center text-center p-2 text-base text-gray-900 rounded-lg hover:bg-gray-100  font-light hover:font-semibold",
+      sidebarExpanded ? "justify-center" : "lg:block")}
+    >
+      <span className="flex items-center text-center  text-base text-gray-900 rounded-lg hover:bg-gray-100  hover:font-semibold">
+        
+          {icon}
+        
+
+        <span
+          className={`${
+            sidebarExpanded
+              ? "lg:hidden opacity-0 ml-0"
+              : "opacity-100 ml-3 block"
+          }ml-3 whitespace-nowrap `}
+        >
+         {label}
+        </span>
+      </span>
+    </Link>
+  </li>
+  );
+        }
