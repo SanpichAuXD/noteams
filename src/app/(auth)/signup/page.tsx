@@ -20,6 +20,9 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
+import signUp from "@/api-caller/user";
+import { SignupRequest } from "@/type/user";
+import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData";
 type Props = {};
 
 const Register = (props: Props) => {
@@ -30,16 +33,20 @@ const Register = (props: Props) => {
 		defaultValues: {
 			username: "",
 			email: "",
-			firstname: "",
-			lastname: "",
 			password: "",
 			cfpassword: "",
 		},
 	});
-	function onSubmit(values: z.infer<typeof registerSchema>) {
+	async function onSubmit(values: z.infer<typeof registerSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		console.log(values);
+		const formData : TypedFormData<SignupRequest> = getTypedFormData<SignupRequest>();
+		formData.append("username", values.username);
+		formData.append("email", values.email);
+		formData.append("password", values.password);
+		const res = await signUp(formData);
+		console.log(res);
 	}
 
 	return (
@@ -132,14 +139,9 @@ const Register = (props: Props) => {
 						<Button
 							type="submit"
 							className="w-full"
-							onClick={() =>
-								console.log(
-									form.getValues("cfpassword"),
-									form.getValues("password")
-								)
-							}
+							
 						>
-							Register
+							Signup
 						</Button>
 						<p className="text-center ">
 							Already Have Account ?{" "}
