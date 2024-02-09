@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, User, Users } from "lucide-react";
+import { Calendar, User, Users, KanbanSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Define the Sidenav component
@@ -87,7 +87,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: any) {
           </p>
           <ul className="text-center space-y-2">           
             <NavItem
-              href="/kanban"
+              href="/teams"
               icon={<Users size={40} />}
               label="Teams"
               setSidebarOpen={setSidebarOpen}
@@ -95,15 +95,22 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: any) {
             />
             <NavItem
               href="/kanban"
-              icon={<User size={40} />}
-              label="Profile"
+              icon={<KanbanSquare size={40} />}
+              label="Kanban Board"
               setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
-              href="#"
+              href="/calendar"
               icon={<Calendar size={40} />}
               label="Calendar"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="/profile"
+              icon={<User size={40} />}
+              label="Profile"
               setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
