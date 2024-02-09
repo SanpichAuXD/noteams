@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { never } from "zod";
+import { FaPencil } from "react-icons/fa6";
 
 const events = [
   { title: "Meeting", start: new Date() },
@@ -99,8 +100,8 @@ function renderEventContent(eventInfo: {
 }) {
   return (
     <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
+      <b>{eventInfo.timeText} </b>
+      <i> TODAY</i>
     </>
   );
 }
