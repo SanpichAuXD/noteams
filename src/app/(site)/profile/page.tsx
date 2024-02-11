@@ -1,7 +1,11 @@
+"use client";
+
 import React from "react";
 import { FaPencil } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { FaBirthdayCake } from "react-icons/fa";
+import Teaminprofile from "@/components/create/teaminprofile";
+import Link from "next/link";
 
 function Profile() {
   return (
@@ -23,9 +27,11 @@ function Profile() {
           <div>
             <p className="text-4xl font-bold">
               NONTAPAT PAKER
-              <button className="ml-10 bg-slate-700 p-2 rounded-md">
-                <FaPencil />
-              </button>
+              <Link href="/profile/editprofile">
+                <button className="ml-10 bg-slate-700 p-2 rounded-md hover:bg-slate-300">
+                  <FaPencil />
+                </button>
+              </Link>
             </p>
           </div>
           <p className="text-3xl font-light">Bachelor IT</p>
@@ -47,9 +53,17 @@ function Profile() {
           </div>
         </div>
       </div>
+      {/* <p className="text-5xl font-bold ">Organize</p> */}
       <div className="flex justify-center">
-
-        <p className="mt-1 h-1 w-3/4 bg-black"></p>
+        <p className="mt-1 h-1 w-5/6 bg-black"></p>
+      </div>
+      <div className="grid grid-cols-4 gap-4 m-16 mt-8">
+        <Teaminprofile />
+        <Teaminprofile />
+        <Teaminprofile />
+        <Teaminprofile />
+        <Teaminprofile />
+        <Teaminprofile />
       </div>
     </main>
   );
