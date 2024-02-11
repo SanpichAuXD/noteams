@@ -76,7 +76,7 @@ const config = {
     },
   },
   plugins: [
-    
+    require("tailwindcss-animate"),
     // Define a Tailwind CSS plugin
     plugin(({ addVariant, e }: any) => {
       // Add a custom variant, "sidebar-expanded"
