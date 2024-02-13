@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { Active, DataRef, Over } from "@dnd-kit/core";
 import { ColumnDragData } from "@/components/kanban/BoardColumn";
 import { TaskDragData } from "@/components/kanban/TaskCard";
-import { IFormattedErrorResponse } from "@/type/type";
+import { IFormattedErrorResponse} from "@/type/type";
 import { AxiosError, isAxiosError } from "axios";
 
 
@@ -57,3 +57,8 @@ export function formattedError(
     message: "error",
   };
 }
+
+export function isResponseError<T>(respone: T | IFormattedErrorResponse): respone is IFormattedErrorResponse {
+  return (respone as IFormattedErrorResponse).status !== undefined;
+}
+
