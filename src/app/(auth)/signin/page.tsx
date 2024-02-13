@@ -4,7 +4,6 @@ import Image from "next/image";
 type Props = {};
 import SignIn from "@/components/auth/SignIn";
 import { cookies } from "next/headers";
-import { Token } from "@/type/user";
 
 export default function Login(props: Props) {
 	async function setCookie(user_id : string, access: string, refresh: string) {
