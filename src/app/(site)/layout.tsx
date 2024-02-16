@@ -22,7 +22,7 @@ export default function RootLayout({
 
   // Effect to handle resizing and update isMobile state accordingly
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
     // Initial resize check and event listener setup
     handleResize();
@@ -33,8 +33,7 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
-      <body>
+    
         <div className="flex h-screen bg-gray-200">
           <div>
             {/* Render the Sidenav component */}
@@ -55,7 +54,6 @@ export default function RootLayout({
             <main>{children}</main>
           </div>
         </div>
-      </body>
-    </html>
+     
   );
 }
