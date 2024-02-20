@@ -55,14 +55,35 @@ export async function getUser(
 }
 
 export async function refreshToken(
-	header: string
+	header: string,
+	refresh: string
 ): Promise<SignInResponse | IFormattedErrorResponse> {
 	console.log("refresh");
+	const formData = new FormData();
+	formData.append("refresh_token", refresh);
 	try {
-		const { data, status, statusText } = await getInstance().post(
-			"/users/refresh",
-			{ withCredentials: true }
-		);
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/users/refresh`,
+			{
+				method: "POST",
+				headers: {
+					Authorization: header,
+				},
+				body: formData,
+			}
+		)
+		const data = await response.json();
+		// getInstance().post(
+		// 	"/users/refresh",
+		// 	{
+		// 		headers:{
+		// 			Authorization: header
+		// 		},
+		// 		body: JSON.stringify({ refresh_token: refresh }),
+		// 	},
+		// 	{ withCredentials: true }
+		// );
+		console.log(data, 'from api caller')
 		return data;
 	} catch (error) {
 		return formattedError(error);
