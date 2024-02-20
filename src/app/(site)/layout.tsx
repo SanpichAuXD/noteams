@@ -1,52 +1,57 @@
-
 import Sidenav from "@/components/sidenav/SliderBar";
 // Import global styles
 import "../globals.css";
-
+import { destr, safeDestr } from "destr";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // Import necessary components and hooks
 import MobileHeader from "@/components/sidenav/MobileHeader";
 import Header from "@/components/sidenav/Header";
+import { cookies } from "next/headers";
+import { User } from "@/type/user";
 
 // Define the RootLayout component
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  // State to track whether the sidebar is open or closed
-  // const [sidebarOpen, setSidebarOpen] = useState(false);
+	const user = cookies().get("user")?.value;
 
-  // State to track if the viewport is in mobile mode
-  // const [isMobile, setIsMobile] = useState(false);
+	// State to track whether the sidebar is open or closed
+	// const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Effect to handle resizing and update isMobile state accordingly
-  // useEffect(() => {
-  //   const handleResize = () => setIsMobile(window.innerWidth < 1024);
+	// State to track if the viewport is in mobile mode
+	// const [isMobile, setIsMobile] = useState(false);
 
-  //   // Initial resize check and event listener setup
-  //   handleResize();
-  //   window.addEventListener("resize", handleResize);
+	// Effect to handle resizing and update isMobile state accordingly
+	// useEffect(() => {
+	//   const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
-  //   // Cleanup: remove event listener on unmount
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, []);
+	//   // Initial resize check and event listener setup
+	//   handleResize();
+	//   window.addEventListener("resize", handleResize);
 
-  return (
-    
-        <div className="flex h-screen bg-gray-200">
-          <Header />
-          <div className="relative flex flex-col flex-1 lg:overflow-y-auto lg:overflow-x-hidden">
-            {/* Render the Header component if in mobile mode */}
-            {/* {isMobile && (
+	//   // Cleanup: remove event listener on unmount
+	//   return () => window.removeEventListener("resize", handleResize);
+	// }, []);
+
+	return (
+		<div className="flex h-screen bg-gray-200">
+			<Header user={destr<User>(user)} />
+			<div className="relative flex flex-col flex-1 lg:overflow-y-auto lg:overflow-x-hidden">
+				{/* Render the Header component if in mobile mode */}
+				{/* {isMobile && (
               <MobileHeader
                 setSidebarOpen={setSidebarOpen}
                 className="sticky top-0 bg-white border-b border-slate-200 z-30"
               />
             )} */}
-            {/* Render the main content */}
-            <main>{children}</main>
-          </div>
-        </div>
-     
-  );
+				{/* Render the main content */}
+				<main>
+					{children}
+					<SpeedInsights />
+				</main>
+			</div>
+		</div>
+	);
 }
