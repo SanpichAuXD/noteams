@@ -2,7 +2,6 @@ import Sidenav from "@/components/sidenav/SliderBar";
 // Import global styles
 import "../globals.css";
 import { destr, safeDestr } from "destr";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 // Import necessary components and hooks
 import MobileHeader from "@/components/sidenav/MobileHeader";
 import Header from "@/components/sidenav/Header";
@@ -49,7 +48,6 @@ export default function RootLayout({
 				{/* Render the main content */}
 				<main>
 					{children}
-					{/* <SpeedInsights /> */}
 				</main>
 			</div>
 		</div>
