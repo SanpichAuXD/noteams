@@ -9,12 +9,22 @@ export type SignupRequest = {
         username: string;
     
     }
-export type LoginRequest = {
+export type SignInRequest = {
     email: string;
     password: string;
     };
 
-export type LoginResponse = {
+export type SignInResponse = {
+    user: User;
+    token: Token;
+}
+
+export type Token = {
+    id: string;
+    access_token: string;
+    refresh_token: string;   
+}
+export type User = {
     id: string;
     email: string;
     username: string;
