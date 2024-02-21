@@ -1,10 +1,13 @@
 "use client"
 import React, { useState } from 'react'
 import Sidenav from './SliderBar';
+import { User } from '@/type/user';
 
-type Props = {}
+type Props = {
+    user: User
+}
 
-const Header = (props: Props) => {
+const Header = ({user}: Props) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (

@@ -1,13 +1,13 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
 type Props = {}
 
-const Home = (props: Props) => {
+const SignOut = (props: Props) => {
   return (
+    // <div>SignOut</div>
     redirect('/signin')
   )
 }
 
-export default Home
+export default SignOut
