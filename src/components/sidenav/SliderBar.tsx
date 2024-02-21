@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, User, Users, KanbanSquare,
+import { Calendar, User, Users, KanbanSquare,LogOut} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -86,57 +86,6 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 
 				{/* Links */}
 				<div className="space-y-4">
-					<p
-						className={`${
-							sidebarExpanded ? "lg:hidden" : "block"
-						} px-2 text-xs font-base text-gray-400 uppercase`}
-					>
-						Actions
-					</p>
-					<ul className="text-center space-y-4">
-						<NavItem
-							href="/teams"
-							icon={<Users size={40} />}
-							label="Teams"
-							sidebarExpanded={sidebarExpanded}
-						/>
-						<NavItem
-							href="/kanban"
-							icon={<User size={40} />}
-							label="Profile"
-							sidebarExpanded={sidebarExpanded}
-						/>
-						<NavItem
-							href="#"
-							icon={<Calendar size={40} />}
-							label="Calendar"
-							sidebarExpanded={sidebarExpanded}
-						/>
-						<NavItem
-							href="/signout"
-							icon={<LogOut size={40} />}
-							label="Sign Out"
-							sidebarExpanded={sidebarExpanded}
-							// callApi={
-							// 	async () => {
-							// 	await fetch("/api/signout", {
-							// 		method: "POST",
-							// 		headers: {
-							// 			"Content-Type": "application/json",
-							// 		},
-							// 		body: JSON.stringify({}),
-							// 	});
-							// 	router.prefetch("/signin");
-							// }
-						// }
-						/>
-						
-					</ul>
-				</div>
-
-
-        {/* Links */}
-        <div className="space-y-4">
           <p
             className={`${
               sidebarExpanded ? "lg:hidden" : "block"
@@ -149,32 +98,36 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
               href="/teams"
               icon={<Users size={40} />}
               label="Teams"
-              setSidebarOpen={setSidebarOpen}
+            //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
               href="/kanban"
               icon={<KanbanSquare size={40} />}
               label="Kanban Board"
-              setSidebarOpen={setSidebarOpen}
+            // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
               href="/calendar"
               icon={<Calendar size={40} />}
               label="Calendar"
-              setSidebarOpen={setSidebarOpen}
+            // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
               href="/profile"
               icon={<User size={40} />}
               label="Profile"
-              setSidebarOpen={setSidebarOpen}
+            // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
           </ul>
         </div>
+
+
+        {/* Links */}
+        
 
 				{/* Expand / collapse button */}
 				<div className="pt-3 lg:inline-flex mt-auto ">

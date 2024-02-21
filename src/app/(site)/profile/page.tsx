@@ -9,7 +9,7 @@ import Link from "next/link";
 
 function Profile() {
   return (
-    <main>
+    <main className="min-h-screen max-h-screen">
       <p className="font-bold text-5xl p-3 underline underline-offset-8">
         Profile
       </p>
