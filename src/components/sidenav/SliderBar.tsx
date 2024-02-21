@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, LogOut, User, Users } from "lucide-react";
+import { Calendar, User, Users, KanbanSquare,
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -133,6 +133,48 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 						
 					</ul>
 				</div>
+
+
+        {/* Links */}
+        <div className="space-y-4">
+          <p
+            className={`${
+              sidebarExpanded ? "lg:hidden" : "block"
+            } px-2 text-xs font-base text-gray-400 uppercase`}
+          >
+            Actions
+          </p>
+          <ul className="text-center space-y-2">           
+            <NavItem
+              href="/teams"
+              icon={<Users size={40} />}
+              label="Teams"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="/kanban"
+              icon={<KanbanSquare size={40} />}
+              label="Kanban Board"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="/calendar"
+              icon={<Calendar size={40} />}
+              label="Calendar"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+            <NavItem
+              href="/profile"
+              icon={<User size={40} />}
+              label="Profile"
+              setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+            />
+          </ul>
+        </div>
 
 				{/* Expand / collapse button */}
 				<div className="pt-3 lg:inline-flex mt-auto ">
