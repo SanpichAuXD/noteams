@@ -49,7 +49,7 @@ export default function RootLayout({
 				{/* Render the main content */}
 				<main>
 					{children}
-					<SpeedInsights />
+					{/* <SpeedInsights /> */}
 				</main>
 			</div>
 		</div>
