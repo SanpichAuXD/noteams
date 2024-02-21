@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/ui/password-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,11 +20,11 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { signIn } from "@/api-caller/user";
 import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData";
-import { SignInRequest, Token } from "@/type/user";
+import { SignInRequest, SignInResponse, Token } from "@/type/user";
 import { useToast } from "../ui/use-toast";
 import { isResponseError } from "@/lib/utils";
 type SignInProps = {
-	setCookie: (user_id: string, access: string, refresh: string) => Promise<void>;
+	setCookie: (data: SignInResponse) => Promise<void>;
 }
 const SignIn = ({setCookie} : SignInProps) => {
 	const { toast } = useToast()
@@ -35,6 +35,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 			password: "",
 		},
 	});
+	const router = useRouter();
 	async function onSubmit(values: z.infer<typeof loginSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
@@ -43,6 +44,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 		formData.append("email", values.email);
 		formData.append("password", values.password);
 		const response = await signIn(formData);
+		console.log(response,'response');
 		// const res = await fetch('api/signin',{
 		// 	method: 'POST',
 		// 	body: JSON.stringify(values)
@@ -50,22 +52,24 @@ const SignIn = ({setCookie} : SignInProps) => {
 		// })
 		// const resJson = await res.json();
 		// console.log(resJson);
-		if(isResponseError(response)){
+		if(!isResponseError(response)){
+			toast({
+				title: "Success!",
+				description: "You have successfully signed in!",
+				variant: "success"
+			})
+			setCookie(response);
+			console.log("sign in successfull!");
+			// router.push("/teams");
+			router.prefetch("/teams");
+		}
+		else {
 			const { message} = response;
 			toast({
 				title: "Error Occured!",
 				description: message,
 				variant: "destructive"
 			})
-		}
-		else {
-			const { user, token } = response;
-			toast({
-				title: "Success!",
-				description: "You have successfully signed in!",
-				variant: "success"
-			})
-			setCookie(user.id, token.access_token, token.refresh_token);
 		}
 	}
 	return (
