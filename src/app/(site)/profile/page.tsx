@@ -3,7 +3,7 @@
 import React from "react";
 import { FaPencil } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
-import { FaBirthdayCake } from "react-icons/fa";
+import { FaBirthdayCake, FaPhoneAlt } from "react-icons/fa";
 import Teaminprofile from "@/components/create/teaminprofile";
 import Link from "next/link";
 
@@ -46,6 +46,12 @@ function Profile() {
             </div>
             <div className=" mt-2 flex items-center">
               <p className="text-6xl mr-10">
+                <FaPhoneAlt />
+              </p>
+              <span className="text-4xl">092-236547</span>
+            </div>
+            <div className=" mt-2 flex items-center">
+              <p className="text-6xl mr-10">
                 <FaBirthdayCake />
               </p>
               <span className="text-4xl">07/07/1991</span>
@@ -58,12 +64,12 @@ function Profile() {
         <p className="mt-1 h-1 w-5/6 bg-black"></p>
       </div>
       <div className="grid grid-cols-4 gap-4 m-16 mt-8">
+        {/* <Teaminprofile />
         <Teaminprofile />
         <Teaminprofile />
         <Teaminprofile />
         <Teaminprofile />
-        <Teaminprofile />
-        <Teaminprofile />
+        <Teaminprofile /> */}
       </div>
     </main>
   );
