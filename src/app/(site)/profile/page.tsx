@@ -18,14 +18,14 @@ function Profile() {
         <div className=" m-16 ">
           <div className="justify-center flex ">
             <img
-              className="h-[32rem] w-[32rem] border-2 rounded-3xl"
+              className="md:h-[20rem] md:w-[20rem] sm:h-[24rem] sm:w-[24rem] border-2 rounded-3xl"
               src="https://i.imgflip.com/4/2b5p.jpg"
             />
           </div>
         </div>
         <div className="m-16">
           <div>
-            <p className="text-4xl font-bold">
+            <p className="md:text-2xl font-bold">
               NONTAPAT PAKER
               <Link href="/profile/editprofile">
                 <button className="ml-10 bg-slate-700 p-2 rounded-md hover:bg-slate-300">
@@ -34,27 +34,27 @@ function Profile() {
               </Link>
             </p>
           </div>
-          <p className="text-3xl font-light">Bachelor IT</p>
+          <p className="md:text-1xl font-light">Bachelor IT</p>
           <div className=" mt-24">
-            <p className="text-5xl font-bold">Contact</p>
+            <p className="md:text-3xl font-bold">Contact</p>
             <p className="mt-1 h-1 w-3/4 bg-black"></p>
             <div className=" mt-6 flex items-center">
-              <p className="text-6xl mr-10">
+              <p className="md:text-4xl mr-10">
                 <MdEmail />
               </p>
-              <span className="text-4xl">Peter987@kmitl.ac.th</span>
+              <span className="md:text-2xl">Peter987@kmitl.ac.th</span>
             </div>
             <div className=" mt-2 flex items-center">
-              <p className="text-6xl mr-10">
+              <p className="text-4xl mr-10">
                 <FaPhoneAlt />
               </p>
-              <span className="text-4xl">092-236547</span>
+              <span className="md:text-2xl">092-236547</span>
             </div>
             <div className=" mt-2 flex items-center">
-              <p className="text-6xl mr-10">
+              <p className="text-4xl mr-10">
                 <FaBirthdayCake />
               </p>
-              <span className="text-4xl">07/07/1991</span>
+              <span className="md:text-2xl">07/07/1991</span>
             </div>
           </div>
         </div>
