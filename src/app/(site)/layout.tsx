@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
 import { User } from "@/type/user";
 
 // Define the RootLayout component
-export default function RootLayout({
+export default function SiteLayout({
 	children,
 }: {
 	children: React.ReactNode;
