@@ -13,7 +13,7 @@ function Calendar() {
   return (
     <main>
         <p className=' font-bold text-5xl p-3 underline underline-offset-8'>Calendar</p>
-        <div className='border-2 border-sky-500 mt-10 mx-10'>
+        <div className=' border-sky-500 mt-10 mx-10 mb-10'>
         <CalendarC />
         </div>
     </main>
