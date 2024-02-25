@@ -42,9 +42,9 @@ const EditProfile: React.FC<Profile1> = ({
   // };
 
   <main>
-    <p className="font-bold text-3xl p-3 underline underline-offset-8">
+    {/* <p className="font-bold text-3xl p-3 underline underline-offset-8">
       EditProfile
-    </p>
+    </p> */}
     <div className="grid grid-cols-2 gap-4 m-16">
       <div className=" m-16 ">
         <div className="justify-center flex ">

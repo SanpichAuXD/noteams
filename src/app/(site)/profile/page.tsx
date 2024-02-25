@@ -34,9 +34,9 @@ const Profile: React.FC<Profileandteam> = ({ pData1, pTeam }) => (
   <main className="min-h-screen max-h-screen">
     {pData1.map((pData) => (
       <div key={pData.userid}>
-        <p className="font-bold text-5xl p-3 underline underline-offset-8">
+        {/* <p className="font-bold text-5xl p-3 underline underline-offset-8">
           Profile
-        </p>
+        </p> */}
 
         <div className="grid grid-cols-2 gap-4 m-16">
           <div className=" m-16 ">
