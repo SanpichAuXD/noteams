@@ -28,13 +28,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+  } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
 import { Input } from "../ui/input"
 import { Calendar } from "../ui/calendar"
 import { useTaskStore } from "@/store/TaskStore"
 import { Task } from "./TaskCard"
-import { Textarea } from "../ui/textarea"
-
+import {Textarea} from "../ui/textarea"
 const status = [
   { label: "Todo", value: "todo" },
   { label: "In Progress", value: "in-progress" },
@@ -55,13 +64,13 @@ const member = [
 const FormSchema = z.object({
   status: z.string({
     required_error: "Please select a language.",
-  }),
+  }).min(1),
   title : z.string({
     required_error: "Please enter a title.",
-  }),
+  }).min(3),
   description : z.string({
     required_error: "Please enter a description.",
-  }),
+  }).min(3),
   assignee : z.string({
     required_error: "Please enter a assignee.",
   }),
@@ -70,31 +79,32 @@ const FormSchema = z.object({
   }),
 })
 type KanbanformProps = {
-  updateTask: (task: Task) => void
+  task: Task;
 }
-export function Kanbanform() {
+export function TaskDetail(task : Task) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: "",
-      title: "",
-      description: "",
-      assignee: "",
-      dueDate: undefined,
+      status: task.columnId,
+      title: task.title,
+      description: task.description,
+      assignee: task.assignee,
+      dueDate: new Date(task.duedate),
     },
   })
-  const addTask = useTaskStore((state)=> state.addTask)
+  const {updateTask,deleteTask } = useTaskStore()
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data)
-    const task : Task  = {
-      id: `task-${Math.random()}`,
+	const task_id = task.id
+    const taskdata : Task  = {
+      id: task_id,
       title: data.title,
       description: data.description,
       columnId: data.status as 'todo' | 'in-progress' | 'done',
       assignee: data.assignee,
       duedate: data.dueDate.toDateString(),
     }
-   addTask(task)
+   updateTask(taskdata)
     toast({
       title: "You submitted the following values:",
       description: (
@@ -113,11 +123,11 @@ export function Kanbanform() {
         name="title"
         render={({ field }) => (
           <FormItem className="flex flex-col">
-            <FormLabel>Title</FormLabel>
+            <FormLabel>Title{task.assignee}</FormLabel>
             <FormControl>
               <Input
                 {...field}
-                className="input"
+                className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white"
                 placeholder="Enter title"
               />
             </FormControl>
@@ -134,7 +144,7 @@ export function Kanbanform() {
             <FormControl>
               <Textarea
                 {...field}
-                className="input"
+                className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white"
                 placeholder="Enter title"
               />
             </FormControl>
@@ -299,7 +309,25 @@ export function Kanbanform() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit </Button>
+        <Button type="submit" className="me-4">Edit</Button>
+		<Dialog>
+      <DialogTrigger asChild>
+		<Button variant={"destructive"}>Delete</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <p>Are you sure you want to delete task {task.title}</p>
+        <DialogFooter>
+          <Button  variant="destructive" onClick={() => deleteTask(task.id as string)}>
+            Delete
+          </Button>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+          </DialogFooter>
+		</DialogContent>
+		</Dialog>
       </form>
     </Form>
   )
