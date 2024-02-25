@@ -4,13 +4,14 @@ import Image from "next/image";
 type Props = {};
 import SignIn from "@/components/auth/SignIn";
 import { cookies } from "next/headers";
+import { SignInResponse } from "@/type/user";
 
 export default function Login(props: Props) {
-	async function setCookie(user_id : string, access: string, refresh: string) {
+	async function setCookie(data: SignInResponse) {
 		"use server";
 		cookies().set({
 			name: "accessToken",
-			value: access,
+			value: data.token.access_token,
 			// keep the cookie for a days
 			maxAge: 60 * 60 * 24,
 			// cookie will be accessible by client's JavaScript
@@ -20,7 +21,7 @@ export default function Login(props: Props) {
 		});
 		cookies().set({
 			name: "refreshToken",
-			value: refresh,
+			value: data.token.refresh_token,
 			// keep the cookie for a week
 			maxAge: 60 * 60 * 24 * 7,
 			// cookie will be accessible by client's JavaScript
@@ -28,12 +29,20 @@ export default function Login(props: Props) {
 			// cookie will be sent only over HTTPS
 			secure: true,
 		});
+		// to convert this string shit
+		// JSON.parse(decodeURI('cookies').replaceAll("%3A",":").replaceAll("%2C", ","))
 		cookies().set({
-			name: "user_id",
-			value: user_id,
+			name: "user",
+			value: JSON.stringify(data.user),
 			// keep the cookie for a week
 			maxAge: 60 * 60 * 24 * 1,
 		});
+		cookies().set({
+			name: "tokenId",
+			value: JSON.stringify(data.token.id),
+			// keep the cookie for a week
+			maxAge: 60 * 60 * 24 * 1,
+		})
 		
 	}
 	return (
