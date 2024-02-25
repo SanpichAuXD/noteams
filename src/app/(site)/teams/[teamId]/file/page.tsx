@@ -1,14 +1,14 @@
 
 import { useRef, useState } from "react";
-import { FileTable, columns } from "./column";
-import { DataTable } from "./data-table";
+import { FileTable, columns } from "@/components/file/column";
+import { DataTable } from "@/components/file/data-table";
 import UploadDnd from "@/components/file/upload-dnd";
 export default async function DragAndDrop() {
   async function getData(): Promise<FileTable[]> {
     return  [
       {
         id: "1",
-        name: "File1",
+        name: "File1 sadasdasdsadad",
         email: "file1@example.com",
         url: "http://example.com/file1",
         createdAt: "2024-02-22T10:00:00Z"
@@ -53,7 +53,7 @@ export default async function DragAndDrop() {
 
   const data = await getData()
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center bg-blue-700">
       <UploadDnd data={data} />
 
     </div>
