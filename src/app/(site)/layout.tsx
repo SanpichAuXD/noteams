@@ -35,7 +35,7 @@ export default function SiteLayout({
 	// }, []);
 
 	return (
-		<div className="flex h-screen bg-gray-200">
+		<div className="flex h-screen ">
 			<Header user={destr<User>(user)} />
 			<div className="relative flex flex-col flex-1 lg:overflow-y-auto lg:overflow-x-hidden">
 				{/* Render the Header component if in mobile mode */}

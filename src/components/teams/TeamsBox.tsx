@@ -10,8 +10,8 @@ type TeamsBoxProps = {
 
 const TeamsBox = ({id,image,title} : TeamsBoxProps) => {
   return (
-    <Link className="bg-white shadow-xl  rounded  h-[200px]  flex flex-col justify-center items-center p-5" href={`teams/${id}`}>
 
+    <Link className="bg-white shadow-xl  rounded  h-[200px]  flex flex-col justify-center items-center p-5" href={`teams/${id}`}>
       <Image
         src={image}
         alt="reg-vector"

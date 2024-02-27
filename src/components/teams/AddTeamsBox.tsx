@@ -34,6 +34,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LoaderIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SearchUserInput } from "./SearchUserInput";
 import { teamsSchema } from "@/validator/teams";
 
 type Props = {};
@@ -64,7 +65,6 @@ const AddTeamsBox = (props: Props) => {
 
 				<DialogContent>
 					{/* <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"> */}
-					{formStep === 0 ? (
 						<section className="p-3">
 							<DialogHeader>
 								<DialogTitle>Create a Team</DialogTitle>
@@ -72,6 +72,7 @@ const AddTeamsBox = (props: Props) => {
 									Bring Everyone together and Get to work!
 								</DialogDescription>
 							</DialogHeader>
+					{formStep === 0 ? (
 							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(onSubmit)}
@@ -133,7 +134,7 @@ const AddTeamsBox = (props: Props) => {
 											</Button>
 										</DialogClose>
 										<Button
-											type="button"
+											type="submit"
 											onClick={() => {
 												setFormStep(formStep + 1);
 											}}
@@ -143,14 +144,24 @@ const AddTeamsBox = (props: Props) => {
 									</div>
 								</form>
 							</Form>
-						</section>
 					) : (
-						<div>
-							<div className="flex items-center justify-center  h-[200px]">
+						<div className="w-full p-5 space-y-5">
+							{/* <div className="flex items-center justify-center  h-[200px]">
 								<Loader2 size={40} className="animate-spin" />
+							</div> */}
+
+							<SearchUserInput />
+							<div className="text-end">
+
+							<DialogClose >
+
+							<Button >Skip</Button>
+							</DialogClose>
 							</div>
 						</div>
 					)}
+											</section>
+
 				</DialogContent>
 				{/* </div> */}
 			</Dialog>
