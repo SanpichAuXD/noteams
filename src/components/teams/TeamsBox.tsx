@@ -9,7 +9,7 @@ type TeamsBoxProps = {
 
 const TeamsBox = ({image,title} : TeamsBoxProps) => {
   return (
-    <Link className="bg-white shadow-xl  rounded  h-[200px]  flex flex-col justify-center items-center p-5" href="teams/1">
+    <Link className="bg-white shadow-xl  rounded  h-[200px]  flex flex-col justify-center items-center p-5" href="teams/1/">
 
       <Image
         src={'https://placehold.co/600x500/png'}
