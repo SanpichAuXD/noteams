@@ -57,7 +57,6 @@ export const useTaskStore = create<TaskState>((set) => ({
       set((state)=>({
           tasks:[...state.tasks,task],
       }))
-      console.log(useTaskStore.getState().tasks)
   },
   setTasks:(tasks:Task[])=>{
         set((state)=>({
@@ -72,7 +71,6 @@ export const useTaskStore = create<TaskState>((set) => ({
               return t.id === task.id ?   task : t
             })
         }))
-        console.log(tasks, 'update task')
   },
   deleteTask:(id:string)=>{
         set((state)=>({

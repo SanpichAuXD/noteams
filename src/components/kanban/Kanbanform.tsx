@@ -54,11 +54,11 @@ const member = [
 
 const FormSchema = z.object({
   status: z.string({
-    required_error: "Please select a language.",
-  }),
+    required_error: "Please select a status.",
+  }).min(1, "Please select a status."),
   title : z.string({
     required_error: "Please enter a title.",
-  }),
+  }).min(4, "Title should be atleast 3 characters long"),
   description : z.string({
     required_error: "Please enter a description.",
   }),
@@ -85,6 +85,7 @@ export function Kanbanform() {
   })
   const addTask = useTaskStore((state)=> state.addTask)
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    
     console.log(data)
     const task : Task  = {
       id: `task-${Math.random()}`,
@@ -103,11 +104,11 @@ export function Kanbanform() {
         </pre>
       ),
     })
-  }
+}
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-5">
         <FormField 
         control={form.control}
         name="title"

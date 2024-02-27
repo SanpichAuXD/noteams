@@ -296,7 +296,6 @@ export function KanbanBoard() {
           activeTask.columnId = overTask.columnId;
           return arrayMove(task, activeIndex, overIndex - 1);
         }
-        console.log(arrayMove(task, activeIndex, overIndex))
         return arrayMove(task, activeIndex, overIndex);
     }
     // Im dropping a Task over another Task
