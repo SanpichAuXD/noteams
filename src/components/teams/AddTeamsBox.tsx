@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { teamsSchema } from "@/validator/teams";
+
 import { z } from "zod";
 import {
 	Form,
@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { LoaderIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchUserInput } from "./SearchUserInput";
+import { teamsSchema } from "@/validator/teams";
 
 type Props = {};
 
@@ -57,9 +58,8 @@ const AddTeamsBox = (props: Props) => {
 		console.log(values);
 	}
 	return (
-		<div className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 			<Dialog>
-				<DialogTrigger>
+				<DialogTrigger className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 					<Plus size={40} />
 				</DialogTrigger>
 
@@ -117,12 +117,11 @@ const AddTeamsBox = (props: Props) => {
 										name="code"
 										render={({ field }) => (
 											<FormItem>
-												<FormLabel>Code Team</FormLabel>
+												<FormLabel>
+													Team Code
+												</FormLabel>
 												<FormControl>
-													<Input
-														placeholder="Enter your code team"
-														{...field}
-													/>
+													<Input placeholder="Enter your code team" {...field} />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -166,7 +165,6 @@ const AddTeamsBox = (props: Props) => {
 				</DialogContent>
 				{/* </div> */}
 			</Dialog>
-		</div>
 	);
 };
 
