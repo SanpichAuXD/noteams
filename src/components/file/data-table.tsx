@@ -11,6 +11,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
+import {useEffect} from "react";
 import {
 	Table,
 	TableBody,
@@ -24,6 +25,7 @@ import { Button } from "../ui/button";
 import { Upload } from "lucide-react";
 import FileUploadButton from "./UploadButton";
 import UploadButton from "./UploadButton";
+import { columns } from './../../app/(site)/teams/[teamId]/member/column';
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
@@ -50,8 +52,15 @@ export function DataTable<TData, TValue>({
 		},
 	});
 	
-	const search = "name" in columns ? "name" : "username";
-	
+	const search = table.getColumn("name") ? "name" : "username";	
+	const isOwner = true;
+	useEffect(()=>{
+		table.getAllColumns().map((column) => {
+			if (column.id === "actions") {
+				column.toggleVisibility(isOwner);
+			}
+		});
+	},[isOwner,table])
 	return (
 		<div className="w-[100%] ">
 			<div className="flex items-center py-4 gap-4 ">

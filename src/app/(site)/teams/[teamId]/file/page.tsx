@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { FileTable, columns } from "@/components/file/column";
 import { DataTable } from "@/components/file/data-table";
 import UploadDnd from "@/components/file/upload-dnd";
+import { useFileStore } from "@/store/FileStore";
 export default async function DragAndDrop() {
   async function getData(): Promise<FileTable[]> {
     return  [
@@ -52,10 +53,12 @@ export default async function DragAndDrop() {
   }
 
   const data = await getData()
+  const {files} = useFileStore.getState()
+  console.log(files)
+  // console.log('page',useFileStore.getState().files)
   return (
     <div className="flex items-center justify-center bg-blue-700">
       <UploadDnd data={data} />
-
     </div>
   );
 }

@@ -16,15 +16,14 @@ type UploadProps = {
 const UploadDnd = ({ data }: UploadProps) => {
 	const [dragActive, setDragActive] = useState<boolean>(false);
 	const inputRef = useRef<any>(null);
-	const filesstore = useFileStore((state) => state.files)
-	const setFilestate = useFileStore((state) => state.setFiles)
-	const addFileState = useFileStore((state) => state.addFile)
-	const [files, setFiles] = useState<any>([]);
+	const {addFile,files} = useFileStore()
+	const [files1, setFiles] = useState<any>([]);
     const {toast} = useToast()
-	useEffect(() => {
-		setFilestate(data)
-	}, []);
-	
+	// useEffect(() => {
+	// 	setFilestate(data)
+	// }, [data,	setFilestate]);
+	const role = 'member'
+	console.log(files)
 	function handleChange(e: any) {
 		e.preventDefault();
 		console.log("File has been added");
@@ -36,27 +35,27 @@ const UploadDnd = ({ data }: UploadProps) => {
 		}
 	}
 
-	async function handleSubmitFile(e: any) {
-		const formData = new FormData();
-		if (files.length === 0) {
-			// no file has been submitted
-		} else {
-			// write submit logic here
-			files.forEach((file: File) => {
-				console.log(typeof file, "check type file");
-				formData.append("files", file);
-			});
-			console.log(formData.get("file"));
-			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_PROD_URL}/files/upload`,
-				{
-					method: "POST",
-					body: formData,
-				}
-			);
-			console.log(response);
-		}
-	}
+	// async function handleSubmitFile(e: any) {
+	// 	const formData = new FormData();
+	// 	if (files1.length === 0) {
+	// 		// no file has been submitted
+	// 	} else {
+	// 		// write submit logic here
+	// 		files.forEach((file: File) => {
+	// 			console.log(typeof file, "check type file");
+	// 			formData.append("files", file);
+	// 		});
+	// 		console.log(formData.get("file"));
+	// 		const response = await fetch(
+	// 			`${process.env.NEXT_PUBLIC_API_PROD_URL}/files/upload`,
+	// 			{
+	// 				method: "POST",
+	// 				body: formData,
+	// 			}
+	// 		);
+	// 		console.log(response);
+	// 	}
+	// }
 
 	function handleDrop(e: any) {
 		e.preventDefault();
@@ -69,7 +68,7 @@ const UploadDnd = ({ data }: UploadProps) => {
 					...prevState,
 					e.dataTransfer.files[i],
 				]);
-				addFileState({
+				addFile({
 					id: "3",
 					name: e.dataTransfer.files[i].name,
 					email: "email3",
@@ -157,7 +156,7 @@ const UploadDnd = ({ data }: UploadProps) => {
         </div>
       ))} */}
 	  				
-					<DataTable columns={columns} data={filesstore} />
+					<DataTable columns={columns} data={files} />
 				</div>
 
 				{/* <button
