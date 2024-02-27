@@ -77,6 +77,6 @@
 
 @layer utilities{
   .teams-nav-link {
-    @apply hover:text-white transition px-3 ;
+    @apply hover:bg-slate-100  transition px-3 rounded-lg py-2;
   }
 }

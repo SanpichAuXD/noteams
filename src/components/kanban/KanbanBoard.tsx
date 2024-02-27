@@ -42,77 +42,8 @@ const defaultCols = [
 
 export type ColumnId = (typeof defaultCols)[number]["id"];
 
-const initialTasks: Task[] = [
-  {
-    id: "task1",
-    columnId: "done",
-    content: "Project initiation and planning",
-  },
-  {
-    id: "task2",
-    columnId: "done",
-    content: "Gather requirements from stakeholders",
-  },
-  {
-    id: "task3",
-    columnId: "done",
-    content: "Create wireframes and mockups",
-  },
-  {
-    id: "task4",
-    columnId: "in-progress",
-    content: "Develop homepage layout",
-  },
-  {
-    id: "task5",
-    columnId: "in-progress",
-    content: "Design color scheme and typography",
-  },
-  {
-    id: "task6",
-    columnId: "todo",
-    content: "Implement user authentication",
-  },
-  {
-    id: "task7",
-    columnId: "todo",
-    content: "Build contact us page",
-  },
-  {
-    id: "task8",
-    columnId: "todo",
-    content: "Create product catalog",
-  },
-  {
-    id: "task9",
-    columnId: "todo",
-    content: "Develop about us page",
-  },
-  {
-    id: "task10",
-    columnId: "todo",
-    content: "Optimize website for mobile devices",
-  },
-  {
-    id: "task11",
-    columnId: "todo",
-    content: "Integrate payment gateway",
-  },
-  {
-    id: "task12",
-    columnId: "todo",
-    content: "Perform testing and bug fixing",
-  },
-  {
-    id: "task13",
-    columnId: "todo",
-    content: "Launch website and deploy to server",
-  },
-];
 export function KanbanBoard() {
-  const tasks = useTaskStore((state)=> state.tasks)
-  const setTasks = useTaskStore((state)=> state.setTasks)
-  const addTask = useTaskStore((state)=> state.addTask)
+  const {tasks, addTask, setTasks} = useTaskStore()
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpTaskColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
@@ -159,7 +90,7 @@ export function KanbanBoard() {
           pickedUpTaskColumn.current
         );
         return `Picked up Task ${
-          active.data.current.task.content
+          active.data.current.task.description
         } at position: ${taskPosition + 1} of ${
           tasksInColumn.length
         } in column ${column?.title}`;
@@ -187,7 +118,7 @@ export function KanbanBoard() {
         );
         if (over.data.current.task.columnId !== pickedUpTaskColumn.current) {
           return `Task ${
-            active.data.current.task.content
+            active.data.current.task.description
           } was moved over column ${column?.title} in position ${
             taskPosition + 1
           } of ${tasksInColumn.length}`;
@@ -365,10 +296,10 @@ export function KanbanBoard() {
           activeTask.columnId = overTask.columnId;
           return arrayMove(task, activeIndex, overIndex - 1);
         }
-        console.log(arrayMove(task, activeIndex, overIndex))
         return arrayMove(task, activeIndex, overIndex);
     }
     // Im dropping a Task over another Task
+    //call api here
     if (isActiveATask && isOverATask) {
         setTasks(changePrior(tasks))
     //  setTasks((tasks : Task[]) => {
@@ -400,6 +331,7 @@ export function KanbanBoard() {
         }
         return task;
     }
+    //call api here
     // Im dropping a Task over a column
     if (isActiveATask && isOverAColumn) {
         setTasks(changeColumn(tasks))

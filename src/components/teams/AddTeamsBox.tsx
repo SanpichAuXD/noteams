@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { teamsSchema } from "@/validator/teams";
+
 import { z } from "zod";
 import {
 	Form,
@@ -34,6 +34,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { LoaderIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SearchUserInput } from "./SearchUserInput";
+import { teamsSchema } from "@/validator/teams";
 
 type Props = {};
 
@@ -45,7 +47,7 @@ const AddTeamsBox = (props: Props) => {
 		defaultValues: {
 			name: "",
 			description: "",
-			allow: "Privacy",
+			code : ""
 		},
 	});
 
@@ -56,15 +58,13 @@ const AddTeamsBox = (props: Props) => {
 		console.log(values);
 	}
 	return (
-		<div className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 			<Dialog>
-				<DialogTrigger>
+				<DialogTrigger className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 					<Plus size={40} />
 				</DialogTrigger>
 
 				<DialogContent>
 					{/* <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"> */}
-					{formStep === 0 ? (
 						<section className="p-3">
 							<DialogHeader>
 								<DialogTitle>Create a Team</DialogTitle>
@@ -72,6 +72,7 @@ const AddTeamsBox = (props: Props) => {
 									Bring Everyone together and Get to work!
 								</DialogDescription>
 							</DialogHeader>
+					{formStep === 0 ? (
 							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(onSubmit)}
@@ -113,36 +114,14 @@ const AddTeamsBox = (props: Props) => {
 									/>
 									<FormField
 										control={form.control}
-										name="allow"
+										name="code"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>
-													Team Name{" "}
-													{form.getValues("allow")}
+													Team Code
 												</FormLabel>
 												<FormControl>
-													<Select
-														onValueChange={
-															field.onChange
-														}
-														defaultValue={"Privacy"}
-													>
-														<SelectTrigger>
-															<SelectValue />
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem value="Privacy">
-																Privacy - Only
-																Team owners can
-																add members
-															</SelectItem>
-															<SelectItem value="Public">
-																Public - Anyone
-																in organization
-																can join
-															</SelectItem>
-														</SelectContent>
-													</Select>
+													<Input placeholder="Enter your code team" {...field} />
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -155,7 +134,7 @@ const AddTeamsBox = (props: Props) => {
 											</Button>
 										</DialogClose>
 										<Button
-											type="button"
+											type="submit"
 											onClick={() => {
 												setFormStep(formStep + 1);
 											}}
@@ -165,18 +144,27 @@ const AddTeamsBox = (props: Props) => {
 									</div>
 								</form>
 							</Form>
-						</section>
 					) : (
-						<div>
-							<div className="flex items-center justify-center  h-[200px]">
+						<div className="w-full p-5 space-y-5">
+							{/* <div className="flex items-center justify-center  h-[200px]">
 								<Loader2 size={40} className="animate-spin" />
+							</div> */}
+
+							<SearchUserInput />
+							<div className="text-end">
+
+							<DialogClose >
+
+							<Button >Skip</Button>
+							</DialogClose>
 							</div>
 						</div>
 					)}
+											</section>
+
 				</DialogContent>
 				{/* </div> */}
 			</Dialog>
-		</div>
 	);
 };
 

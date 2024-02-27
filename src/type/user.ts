@@ -2,6 +2,8 @@ export type SignupRequest = {
     email: string;
     password: string;
     username: string;
+    dob: string;
+    phone :string;
     };
     export type SignupResponse = {
         id: string;

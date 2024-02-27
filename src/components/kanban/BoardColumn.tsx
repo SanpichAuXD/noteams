@@ -23,6 +23,7 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
+import { Kanbanform } from './Kanbanform';
 
 export interface Column {
 	id: UniqueIdentifier;
@@ -131,11 +132,7 @@ export function BoardColumn({
 					<SheetContent className="w-[500px] md:max-w-[500px]" side={"right"}>
 						<SheetHeader>
 							<SheetTitle>Add Task</SheetTitle>
-              <SheetDescription>
-								This action cannot be undone. This will
-								permanently delete your account and remove your
-								data from our servers.
-							</SheetDescription>
+							<Kanbanform  />
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>

@@ -18,6 +18,34 @@ import { cookies } from "next/headers";
 import React from "react";
 
 const Teams = () => {
+	const mockData  = [
+		{
+			id: "1",
+			image: "https://placehold.co/600x500/png",
+			title: "My Teams",
+		},
+		{
+			id:"2",
+			image: "https://placehold.co/600x500/png",
+			title: "My Teams",
+		},
+		{
+			id:"3",
+			image: "https://placehold.co/600x500/png",
+			title: "My Teams",
+		},
+		{
+			id:"4",
+			image: "https://placehold.co/600x500/png",
+			title: "My Teams",
+		},
+		{
+			id:"5",
+			image: "https://placehold.co/600x500/png",
+			title: "My Teams",
+		},
+		
+	];
 	return (
 		<div className="py-10 px-5 flex flex-col container  min-h-screen ">
 			<header className="flex justify-between mb-6">
@@ -39,18 +67,9 @@ const Teams = () => {
 			</header>
 			<section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5   gap-8 ">
 				<AddTeamsBox />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
-				<TeamsBox image={""} title={""} />
+				{mockData.map((team)=>{
+					return <TeamsBox key={team.id} id={team.id} image={team.image} title={team.title} />
+				})}
 			</section>
 		</div>
 	);
