@@ -39,7 +39,7 @@ export default function Login(props: Props) {
 		});
 		cookies().set({
 			name: "tokenId",
-			value: JSON.stringify(data.token.id),
+			value: JSON.stringify(data.token.oauth_id),
 			// keep the cookie for a week
 			maxAge: 60 * 60 * 24 * 1,
 		})

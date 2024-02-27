@@ -22,7 +22,7 @@ export type SignInResponse = {
 }
 
 export type Token = {
-    id: string;
+    oauth_id: string;
     access_token: string;
     refresh_token: string;   
 }

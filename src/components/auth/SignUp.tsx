@@ -45,18 +45,24 @@ const SignUp = (props: Props) => {
 			email: "",
 			password: "",
 			cfpassword: "",
+			phone: "",
 			dob: new Date(),
 		},
 	});
 
 	const ValidateBeforeNext = async () => {
 		// Trigger validation for the relevant fields
-		console.log(formStep, "formStep")
+		console.log(formStep, "formStep");
 		if (formStep == 0) {
 			await form.trigger(["username", "email"]);
 			const usernameState = form.getFieldState("username");
 			const emailState = form.getFieldState("email");
-			if (usernameState.invalid || emailState.invalid || !usernameState.isDirty || !emailState.isDirty) {
+			if (
+				usernameState.invalid ||
+				emailState.invalid ||
+				!usernameState.isDirty ||
+				!emailState.isDirty
+			) {
 				return;
 			}
 			setFormStep(formStep + 1);
@@ -64,23 +70,28 @@ const SignUp = (props: Props) => {
 			await form.trigger(["dob", "phone"]);
 			const dobState = form.getFieldState("dob");
 			const phoneState = form.getFieldState("phone");
-			if (dobState.invalid || phoneState.invalid || !dobState.isDirty || !phoneState.isDirty) {
+			if (
+				dobState.invalid ||
+				phoneState.invalid ||
+				!dobState.isDirty ||
+				!phoneState.isDirty
+			) {
 				return;
 			}
 			setFormStep(formStep + 1);
 		}
-		
-	} 
+	};
 	async function onSubmit(values: z.infer<typeof registerSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		const formData: TypedFormData<SignupRequest> =
 			getTypedFormData<SignupRequest>();
+		const date = values.dob.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
 		formData.append("username", values.username);
 		formData.append("email", values.email);
 		formData.append("password", values.password);
-		formData.append("dob" , values.dob.toDateString())
-		formData.append("phone", values.phone)
+		formData.append("dob", `${date[2]}-${date[0]}-${date[1]}`);
+		formData.append("phone", values.phone);
 		const response = await signUp(formData);
 		if (!isResponseError(response)) {
 			toast({
@@ -149,10 +160,10 @@ const SignUp = (props: Props) => {
 								</FormItem>
 							)}
 						/>
-						</div>
-						<div
+					</div>
+					<div
 						className={cn(
-							"space-y-3 mb-5 px-3 absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+							"space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
 							{
 								"transform translate-x-full ": formStep !== 1,
 							},
@@ -166,53 +177,56 @@ const SignUp = (props: Props) => {
 							control={form.control}
 							name="dob"
 							render={({ field }) => (
-								<FormItem >
-
+								<FormItem>
 									<FormLabel>Year</FormLabel>
 									<div className="flex  items-center gap-8">
-									<Popover>
-										<PopoverTrigger asChild>
-											<FormControl>
-												<Button
-													variant={"outline"}
-													className={cn(
-														"w-[240px] pl-3 text-left font-normal",
-														!field.value &&
-															"text-muted-foreground"
-													)}
-												>
-													{field.value ? (
-														format(
-															field.value,
-															"PPP"
-														)
-													) : (
-														<span>Pick a date</span>
-													)}
-													<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-												</Button>
-											</FormControl>
-										</PopoverTrigger>
-										<PopoverContent
-											className="w-auto p-0"
-											align="start"
-										>
-											<Calendar
-												mode="single"
-												selected={field.value}
-												onSelect={field.onChange}
-												disabled={(date) =>
-													date > new Date() ||
-													date <
-														new Date("1900-01-01")
-												}
-												captionLayout="dropdown-buttons"
-												fromYear={1950}
-												toYear={2025}
-												initialFocus
-											/>
-										</PopoverContent>
-									</Popover>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant={"outline"}
+														className={cn(
+															"w-[240px] pl-3 text-left font-normal",
+															!field.value &&
+																"text-muted-foreground"
+														)}
+													>
+														{field.value ? (
+															format(
+																field.value,
+																"PPP"
+															)
+														) : (
+															<span>
+																Pick a date
+															</span>
+														)}
+														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent
+												className="w-auto p-0"
+												align="start"
+											>
+												<Calendar
+													mode="single"
+													selected={field.value}
+													onSelect={field.onChange}
+													disabled={(date) =>
+														date > new Date() ||
+														date <
+															new Date(
+																"1900-01-01"
+															)
+													}
+													captionLayout="dropdown-buttons"
+													fromYear={1950}
+													toYear={2025}
+													initialFocus
+												/>
+											</PopoverContent>
+										</Popover>
 									</div>
 									<FormMessage />
 								</FormItem>
@@ -240,7 +254,7 @@ const SignUp = (props: Props) => {
 					</div>
 					<div
 						className={cn(
-							"space-y-3 mb-5 px-3 absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+							"space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
 							{
 								"transform translate-x-full ": formStep !== 2,
 							},
@@ -284,9 +298,9 @@ const SignUp = (props: Props) => {
 							)}
 						/>
 					</div>
-								
+
 					<div
-						className={cn("flex justify-between relative pt-15", {
+						className={cn("flex justify-between relative pt-14 ", {
 							"justify-end": formStep == 0,
 						})}
 					>
@@ -318,19 +332,19 @@ const SignUp = (props: Props) => {
 							className={cn("text-end", {
 								hidden: formStep == 2,
 							})}
-							onClick={() => ValidateBeforeNext() }
+							onClick={() => ValidateBeforeNext()}
 						>
 							Next
 							<ArrowRight className="ml-2 w-4 h-4" />
 						</Button>
 					</div>
-								<p className="text-center pt-5">
-											Already Have Account ?{" "}
-											<Link href={"/signin"} className="font-bold">
-												{" "}
-												Login
-											</Link>
-										</p>
+					<p className="text-center pt-5">
+						Already Have Account ?{" "}
+						<Link href={"/signin"} className="font-bold">
+							{" "}
+							Login
+						</Link>
+					</p>
 				</form>
 			</Form>
 		</div>
