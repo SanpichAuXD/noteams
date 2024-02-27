@@ -9,11 +9,13 @@ import { Files, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import UploadButton from "./UploadButton";
 
-type UploadProps = {
-	data: FileTable[];
-};
+// type UploadProps = {
+// 	data: FileTable[];
+// };
 
-const UploadDnd = ({ data }: UploadProps) => {
+const UploadDnd = (
+	// { data }: UploadProps
+	) => {
 	const [dragActive, setDragActive] = useState<boolean>(false);
 	const inputRef = useRef<any>(null);
 	const {addFile,files} = useFileStore()
@@ -77,7 +79,7 @@ const UploadDnd = ({ data }: UploadProps) => {
 				});
                 toast({title : `File ${e.dataTransfer.files[i].name} has uploading`})
 			}
-			console.log([...data, ...files]);
+			// console.log([...data, ...files]);
 		}
 	}
 

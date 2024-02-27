@@ -56,20 +56,6 @@ async function getData(): Promise<FileTable[]> {
   }
 export const useFileStore = create<FileState>((set) => ({
    files: [
-    {
-        id:"1",
-        name:"file1",
-        email:"email1",
-        url:"url1",
-        createdAt:"createdAt1"
-    },
-    {
-        id:"2",
-        name:"file2",
-        email:"email2",
-        url:"url2",
-        createdAt:"createdAt2"
-    }
   ],
   addFile:(file:FileTable)=>{
     console.log('add')
