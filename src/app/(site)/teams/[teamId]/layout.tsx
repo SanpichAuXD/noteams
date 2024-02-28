@@ -61,7 +61,7 @@ const TeamsLayout = ({
 					<Link href={`/teams/${params.teamId}/setting`} className="teams-nav-link">
 						Setting
 					</Link>
-					<Link href={`/teams/${params.teamId}/about`} className="teams-nav-link">
+					<Link href={`/teams/${params.teamId}/`} className="teams-nav-link">
 						About
 					</Link>
 					<Link href="member" className="teams-nav-link">
