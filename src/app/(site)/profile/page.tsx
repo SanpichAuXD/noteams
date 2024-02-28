@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { FaBirthdayCake, FaPhoneAlt } from "react-icons/fa";
 import Teaminprofile from "@/components/create/teaminprofile";
 import Link from "next/link";
 import { date } from "zod";
+import { getUser } from "@/api-caller/user";
+import { cookies } from "next/headers";
 
 type Profile1 = {
   userid: number;
@@ -30,7 +32,11 @@ type Profileandteam = {
   pTeam: Team1[];
 };
 
+// const cookies = cookies.get("accessToken").value
+console.log(getUser)
+
 const Profile: React.FC<Profileandteam> = ({ pData1, pTeam }) => (
+  
   <main className="min-h-screen max-h-screen">
     {pData1.map((pData) => (
       <div key={pData.userid}>
@@ -98,6 +104,19 @@ const Profile: React.FC<Profileandteam> = ({ pData1, pTeam }) => (
 );
 
 function ProfileApp() {
+
+  // const [profile, setProfile] = useState([]);
+  // useEffect(() => {
+  //   fetch('https://f7r7tx33-3000.asse.devtunnels.ms/api/users/profile/1')
+  //     .then((res) => {
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       console.log(data);
+  //       setProfile(data);
+  //     });
+  // }, []);
+
   const profile01: Profile1[] = [
     {
       userid: 1,
