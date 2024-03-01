@@ -1,5 +1,8 @@
+import { getTeams } from "@/api-caller/team";
+import { GetProfile } from "@/api-caller/user";
 import AddTeamsBox from "@/components/teams/AddTeamsBox";
 import { JoinForm } from "@/components/teams/JoinForm";
+import RenderTeamBox from "@/components/teams/RenderTeamBox";
 import TeamsBox from "@/components/teams/TeamsBox";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,40 +15,26 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Token, User } from "@/type/user";
+import { useTeam } from "@/store/TeamState";
+import { SignupRequest, SignupResponse, Token, User } from "@/type/user";
+import { HydrationBoundary, QueryClient, dehydrate, useQueryClient } from "@tanstack/react-query";
+import destr from "destr";
 import { Copy, Plus } from "lucide-react";
 import { cookies } from "next/headers";
-import React from "react";
+import React, { use } from "react";
 
-const Teams = () => {
-	const mockData  = [
-		{
-			id: "1",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"2",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"3",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"4",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"5",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		
-	];
+const Teams = async() => {
+	const cookie = cookies().get("accessToken")?.value!;
+	const users = cookies().get("user")?.value!;
+	const {user_id} = destr<SignupRequest>(users);
+	// const queryClient  = new QueryClient();
+	// await queryClient.prefetchQuery({
+	// 	queryKey: ["hydrate-team"],
+	// 	queryFn: async()=> getTeams(cookie),
+	//   });
+	
+	const userxd = await GetProfile(cookie, user_id);
+	console.log(userxd)
 	return (
 		<div className="py-10 px-5 flex flex-col container  min-h-screen ">
 			<header className="flex justify-between mb-6">
@@ -60,16 +49,17 @@ const Teams = () => {
 							<DialogDescription>Got a Code to join a team ? Enter it below.</DialogDescription>
 						</DialogHeader>
 						<div className="flex items-center space-x-2">
-							<JoinForm />
+							<JoinForm token={cookie}/>
 						</div>
 					</DialogContent>
 				</Dialog>
 			</header>
 			<section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5   gap-8 ">
-				<AddTeamsBox />
-				{mockData.map((team)=>{
-					return <TeamsBox key={team.id} id={team.id} image={team.image} title={team.title} />
-				})}
+				<AddTeamsBox token={cookie}/>
+				{/* <HydrationBoundary state={dehydrate(queryClient)}>
+
+				<RenderTeamBox token={cookies().get("accessToken")?.value!}/>
+				</HydrationBoundary> */}
 			</section>
 		</div>
 	);
