@@ -1,8 +1,11 @@
 export type SignupRequest = {
+    user_id: string;
     email: string;
     password: string;
     username: string;
     dob: string;
+    avatar: string;
+    bio : string;
     phone :string;
     };
     export type SignupResponse = {
