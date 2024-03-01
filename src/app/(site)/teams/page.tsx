@@ -25,16 +25,14 @@ import React, { use } from "react";
 
 const Teams = async() => {
 	const cookie = cookies().get("accessToken")?.value!;
-	const users = cookies().get("user")?.value!;
-	const {user_id} = destr<SignupRequest>(users);
-	// const queryClient  = new QueryClient();
-	// await queryClient.prefetchQuery({
-	// 	queryKey: ["hydrate-team"],
-	// 	queryFn: async()=> getTeams(cookie),
-	//   });
 	
-	const userxd = await GetProfile(cookie, user_id);
-	console.log(userxd)
+	const queryClient  = new QueryClient();
+	await queryClient.prefetchQuery({
+		queryKey: ["hydrate-team"],
+		queryFn: async()=> getTeams(cookie),
+	  });
+	
+	
 	return (
 		<div className="py-10 px-5 flex flex-col container  min-h-screen ">
 			<header className="flex justify-between mb-6">
@@ -56,10 +54,10 @@ const Teams = async() => {
 			</header>
 			<section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5   gap-8 ">
 				<AddTeamsBox token={cookie}/>
-				{/* <HydrationBoundary state={dehydrate(queryClient)}>
+				<HydrationBoundary state={dehydrate(queryClient)}>
 
 				<RenderTeamBox token={cookies().get("accessToken")?.value!}/>
-				</HydrationBoundary> */}
+				</HydrationBoundary>
 			</section>
 		</div>
 	);
