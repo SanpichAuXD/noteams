@@ -31,7 +31,7 @@ const Teams = async() => {
 	// await queryClient.prefetchQuery({
 	// 	queryKey: ["hydrate-team"],
 	// 	queryFn: async()=> getTeams(cookie),
-	//   });
+	//   });a 
 	
 	const userxd = await GetProfile(cookie, user_id);
 	console.log(userxd)

@@ -29,7 +29,7 @@ type Team1 = {
 };
 
 type Profileandteam = {
-  pData1: Profile1[];
+  pData1: Profile1;
   pTeam: Team1[];
 };
 
@@ -50,7 +50,7 @@ const Profile: React.FC<Profileandteam> = ({ pData1, pTeam }) => (
             <div className="justify-center flex ">
               <img
                 className="md:h-[20rem] md:w-[20rem] sm:h-[24rem] sm:w-[24rem] border-2 rounded-3xl"
-                src={pData1.avatar}
+                src={pData1.avatar !== "" ? pData1.avatar : "https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png"}
               />
             </div>
           </div>
