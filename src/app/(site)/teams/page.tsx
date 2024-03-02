@@ -1,3 +1,4 @@
+import { GetProfile, GetTeam } from "@/api-caller/user";
 import AddTeamsBox from "@/components/teams/AddTeamsBox";
 import { JoinForm } from "@/components/teams/JoinForm";
 import TeamsBox from "@/components/teams/TeamsBox";
@@ -12,40 +13,30 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Token, User } from "@/type/user";
+import { SignupRequest, Token, User } from "@/type/user";
+import destr from "destr";
 import { Copy, Plus } from "lucide-react";
 import { cookies } from "next/headers";
 import React from "react";
 
-const Teams = () => {
-	const mockData  = [
-		{
-			id: "1",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"2",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"3",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"4",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		{
-			id:"5",
-			image: "https://placehold.co/600x500/png",
-			title: "My Teams",
-		},
-		
-	];
+interface Teams {
+	token: string;
+}
+
+const Teams = async() => {
+	const cookie = cookies().get("accessToken")?.value!;
+	const users = cookies().get("user")?.value!;
+	const {user_id} = destr<SignupRequest>(users);
+	// const queryClient  = new QueryClient();
+	// await queryClient.prefetchQuery({
+	// 	queryKey: ["hydrate-team"],
+	// 	queryFn: async()=> getTeams(cookie),
+	//   });
+	
+	const userxd = await GetProfile(cookie, user_id);
+	console.log(userxd)
+	const teamxd = await GetTeam(cookie, user_id);
+	console.log("Team",teamxd)
 	return (
 		<div className="py-10 px-5 flex flex-col container  min-h-screen ">
 			<header className="flex justify-between mb-6">
@@ -66,10 +57,10 @@ const Teams = () => {
 				</Dialog>
 			</header>
 			<section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5   gap-8 ">
-				<AddTeamsBox />
-				{mockData.map((team)=>{
+			<AddTeamsBox token={cookie}/>
+				{/* {mockData.map((team)=>{
 					return <TeamsBox key={team.id} id={team.id} image={team.image} title={team.title} />
-				})}
+				})} */}
 			</section>
 		</div>
 	);
