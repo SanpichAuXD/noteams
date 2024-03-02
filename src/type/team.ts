@@ -23,3 +23,13 @@ export type JoinTeamRequest = {
     team_code : string;
     user_id : string;
 }
+
+export type TeamRequest = {
+    team_id : string;
+    token : string;
+}
+
+export type SettingRequest = {
+    permissionType : 'task' | 'file' | 'invite';
+    value : boolean;
+}

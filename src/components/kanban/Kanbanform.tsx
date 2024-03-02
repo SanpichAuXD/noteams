@@ -34,11 +34,17 @@ import { Calendar } from "../ui/calendar"
 import { useTaskStore } from "@/store/TaskStore"
 import { Task } from "./TaskCard"
 import { Textarea } from "../ui/textarea"
+import { TaskSchema } from "@/validator/task"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { AxiosError } from "axios";
+import { IFormattedErrorResponse } from "@/type/type";
+import { ColumnId } from "./KanbanBoard"
+import { createTask } from "@/api-caller/task"
 
 const status = [
-  { label: "Todo", value: "todo" },
-  { label: "In Progress", value: "in-progress" },
-  { label: "Done", value: "done" },
+  { label: "Todo", value: "TODO" },
+  { label: "In Progress", value: "DOING" },
+  { label: "Done", value: "DONE" },
  
 ] as const
 // label email or username and value is id
@@ -70,32 +76,54 @@ const FormSchema = z.object({
   }),
 })
 type KanbanformProps = {
-  updateTask: (task: Task) => void
+  column : string
+  token:string;
+  team_id : string;
 }
-export function Kanbanform() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+export function Kanbanform({column, token, team_id} : KanbanformProps) {
+  const form = useForm<z.infer<typeof TaskSchema>>({
+    resolver: zodResolver(TaskSchema),
     defaultValues: {
-      status: "",
+      status: column,
       title: "",
       description: "",
       assignee: "",
       dueDate: undefined,
     },
   })
+  const queryClient = useQueryClient()
+  const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,FormData>({
+    mutationFn : async (formData) => {
+      const {data} = await createTask({token, team_id, formData});
+      return data;
+  },
+  onSuccess : () => {
+    console.log('success')
+    queryClient.invalidateQueries({queryKey : ['tasks']})
+},
+onError : (error) => {
+console.log(error.response?.data.message)
+}
+  })
   const addTask = useTaskStore((state)=> state.addTask)
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    
-    console.log(data)
-    const task : Task  = {
-      id: `task-${Math.random()}`,
-      title: data.title,
-      description: data.description,
-      columnId: data.status as 'todo' | 'in-progress' | 'done',
-      assignee: data.assignee,
-      duedate: data.dueDate.toDateString(),
-    }
-   addTask(task)
+  function onSubmit(data: z.infer<typeof TaskSchema>) {
+      const date = data?.dueDate?.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
+    const formData = new FormData()
+    formData.append("task_name", data.title)
+    formData.append("task_desc", data.description || "")
+    formData.append("task_status", data.status)
+    formData.append("user_id", data.assignee || "")
+    formData.append("task_deadline", data.dueDate != undefined && date ? `${date[2]}-${date[0]}-${date[1]}` : "")
+    mutation.mutate(formData)
+    //   const task : Task  = {
+  //     task_id: `task-${Math.random()}`,
+  //     task_name: data.title,
+  //     task_desc: data.description,
+  //     task_status: data.status as 'TODO' | 'DOING' | 'DONE',
+  //     user_id: data.assignee != undefined ? data.assignee : "",
+  //     task_deadline: data.dueDate != undefined ? data.dueDate.toDateString() : "",
+  //   }
+  //  addTask(task)
     toast({
       title: "You submitted the following values:",
       description: (

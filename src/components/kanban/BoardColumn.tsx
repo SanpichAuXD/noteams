@@ -41,7 +41,9 @@ interface BoardColumnProps {
 	column: Column;
 	tasks: Task[];
 	isOverlay?: boolean;
-	addTask: (task: Task) => void;
+	addTask?: (task: Task) => void;
+	token: string;
+	team_id : string;
 }
 
 export function BoardColumn({
@@ -49,11 +51,12 @@ export function BoardColumn({
 	tasks,
 	isOverlay,
 	addTask,
+	token,
+	team_id
 }: BoardColumnProps) {
 	const tasksIds = useMemo(() => {
-		return tasks.map((task) => task.id);
+		return tasks.map((task) => task.task_id);
 	}, [tasks]);
-
 	const {
 		setNodeRef,
 		attributes,
@@ -118,7 +121,7 @@ export function BoardColumn({
 				<CardContent className="flex flex-grow flex-col gap-2 p-2">
 					<SortableContext items={tasksIds}>
 						{tasks.map((task) => (
-							<TaskCard key={task.id} task={task} />
+							<TaskCard key={task.task_id} task={task} team_id={team_id} token={token} />
 						))}
 					</SortableContext>
 				</CardContent>
@@ -132,7 +135,7 @@ export function BoardColumn({
 					<SheetContent className="w-[500px] md:max-w-[500px]" side={"right"}>
 						<SheetHeader>
 							<SheetTitle>Add Task</SheetTitle>
-							<Kanbanform  />
+							<Kanbanform column={column.id as string} token={token} team_id={team_id} />
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>
