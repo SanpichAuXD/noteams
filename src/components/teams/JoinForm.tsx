@@ -16,6 +16,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { CreateTeamResponse, JoinTeamRequest } from "@/type/team"
+import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData"
+import { getUserCookie } from "@/lib/utils"
+import destr from "destr"
+import { SignupRequest } from "@/type/user"
 
 const FormSchema = z.object({
   code: z.string().min(6, {
@@ -23,23 +29,40 @@ const FormSchema = z.object({
   }),
 })
 
-export function JoinForm() {
+type Props = {
+	token : string;
+};
+
+export function JoinForm({token}: Props) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       code: "",
     },
   })
-
+  const queryClient = useQueryClient()
+  const mutation = useMutation< Error, JoinTeamRequest>({
+    mutationFn : async () => {
+      const formData : TypedFormData<JoinTeamRequest> = getTypedFormData()
+      const {user_id} = (destr<SignupRequest>(getUserCookie()))
+      formData.append("team_code",form.getValues('code'))
+      formData.append("user_id",user_id)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/join`, {
+        method : 'POST',
+        body : formData as FormData,
+        headers : {
+          "Authorization" : `Bearer ${token}`
+        }
+      })
+        return await response.json();
+  },
+  onSuccess : () => {
+      console.log('success')
+      queryClient.invalidateQueries({queryKey : ['team']})
+  }
+})
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    mutation.mutate()
   }
 
   return (
