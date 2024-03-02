@@ -14,6 +14,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { redirect, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -81,6 +82,7 @@ const SignUp = (props: Props) => {
 			setFormStep(formStep + 1);
 		}
 	};
+	const router = useRouter();
 	async function onSubmit(values: z.infer<typeof registerSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
@@ -99,6 +101,7 @@ const SignUp = (props: Props) => {
 				description: "You have successfully signed up!",
 				variant: "success",
 			});
+			router.push("/signin");
 		} else {
 			const { message, status, statusText } = response;
 			toast({

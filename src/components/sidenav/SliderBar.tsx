@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Calendar, User, Users, KanbanSquare,LogOut} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { error } from "console";
 
 // Define the Sidenav component
 type SidenavProps = {
@@ -37,7 +38,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 			{/* Sidebar backdrop (visible on mobile only) */}
 			<div
 				onClick={() => setSidebarOpen(!sidebarOpen)}
-				className={`fixed inset-0 border-r border-red-700 md:translate-x-0  bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200 ${
+				className={`fixed inset-0 border-r  xs:translate-x-0    bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200 ${
 					sidebarOpen ? "opacity-100" : " pointer-events-none"
 				}`}
 				aria-hidden="true"
@@ -47,7 +48,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 			<div
 				id="sidebar"
 				ref={sidebar}
-				className={`fixed flex flex-col md:-translate-x-72  z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 sm:translate-x-0  h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar lg:w-64  w-72 bg-white lg:sidebar-expanded:w-20 shrink-0 border-r border-gray-200  p-4 transition-all duration-200 ${
+				className={`fixed flex flex-col md:none  z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0   h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar lg:w-64  w-72 bg-white lg:sidebar-expanded:w-20 shrink-0 border-r border-gray-200  p-4 transition-all duration-200 ${
 					sidebarOpen ? "translate-x-0" : "-translate-x-72"
 				}`}
 			>
@@ -122,6 +123,22 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
             // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
+			<NavItem
+              href="/signin"
+              icon={<LogOut size={40} />}
+              label="Signout"
+            // //   setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+			  callApi={async()=> {
+					const response = await fetch('api/signout')
+					if (response.ok) {
+						router.push('/signin')
+					}
+					else{
+						alert("something explode in code")
+					}
+			  }}
+            />
           </ul>
         </div>
 
@@ -173,7 +190,7 @@ type NavItemProps = {
 	icon: React.ReactNode;
 	label: string;
 	sidebarExpanded: boolean;
-  callApi? : any;
+  	callApi? : any;
 };
 
 const NavItem = ({

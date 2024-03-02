@@ -44,7 +44,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 		formData.append("email", values.email);
 		formData.append("password", values.password);
 		const response = await signIn(formData);
-		console.log(response,'response');
+		console.log(response,'response', isResponseError(response));
 		// const res = await fetch('api/signin',{
 		// 	method: 'POST',
 		// 	body: JSON.stringify(values)
@@ -60,8 +60,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 			})
 			setCookie(response);
 			console.log("sign in successfull!");
-			// router.push("/teams");
-			router.prefetch("/teams");
+			router.push("/teams");
 		}
 		else {
 			const { message} = response;
@@ -120,6 +119,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 					<Button type="submit" className="w-full">
 						Login
 					</Button>
+					
 					<p className="text-center ">
 						Don{"'t"} Have Account ?{" "}
 						<Link href={"/signup"} className="font-bold">
@@ -129,6 +129,7 @@ const SignIn = ({setCookie} : SignInProps) => {
 					</p>
 				</form>
 			</Form>
+			
 		</div>
 	);
 };

@@ -22,6 +22,7 @@ import destr from "destr";
 import { Copy, Plus } from "lucide-react";
 import { cookies } from "next/headers";
 import React, { use } from "react";
+import WithAuth from './../../../components/ui/WithAuth';
 
 const Teams = async() => {
 	const cookie = cookies().get("accessToken")?.value!;
@@ -62,4 +63,4 @@ const Teams = async() => {
 		</div>
 	);
 };
-export default Teams;
+export default WithAuth(Teams);
