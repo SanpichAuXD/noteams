@@ -34,3 +34,8 @@ export type User = {
     email: string;
     username: string;
 }
+
+export type MemberUser =  {member_id: string
+username: string
+email: string
+role : 'OWNER' | 'MEMBER'}
