@@ -8,14 +8,26 @@ import { useToast } from "../ui/use-toast";
 import { Files, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import UploadButton from "./UploadButton";
+import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
+import { TeamFile } from "@/type/team";
+import { IFormattedErrorResponse } from "@/type/type";
+import { getFiles, uploadFile } from "@/api-caller/file";
 
-// type UploadProps = {
-// 	data: FileTable[];
-// };
+type UploadProps = {
+	token : string;
+	team_id : string
+};
 
 const UploadDnd = (
 	// { data }: UploadProps
+	{token, team_id} : UploadProps
 	) => {
+	const {data} = useQuery<TeamFile[], IFormattedErrorResponse>({
+		queryKey: [`hydrate-file-${team_id}`],
+		queryFn: async () => await getFiles({ token: token, team_id:team_id }),
+		
+	});
+	console.log(data, 'hydrate file')
 	const [dragActive, setDragActive] = useState<boolean>(false);
 	const inputRef = useRef<any>(null);
 	const {addFile,files} = useFileStore()
@@ -58,6 +70,20 @@ const UploadDnd = (
 	// 		console.log(response);
 	// 	}
 	// }
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation<TeamFile[], IFormattedErrorResponse, FormData>({
+		mutationFn: async (formData) => {
+			return await uploadFile({token:token, team_id:team_id, formData});
+		},
+		onSuccess: () => {
+			console.log("success");
+			queryClient.invalidateQueries({ queryKey: ["hydrate-file"] });
+		},
+		onError: (error) => {
+			console.log(error);
+		},
+	});
 
 	function handleDrop(e: any) {
 		e.preventDefault();
@@ -65,20 +91,13 @@ const UploadDnd = (
 		setDragActive(false);
 		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
 			console.log("file drop")
+			const formData = new FormData()
 			for (let i = 0; i < e.dataTransfer.files["length"]; i++) {
-				setFiles((prevState: any) => [
-					...prevState,
-					e.dataTransfer.files[i],
-				]);
-				addFile({
-					id: "3",
-					name: e.dataTransfer.files[i].name,
-					email: "email3",
-					url: "url3",
-					createdAt: new Date().toDateString(),
-				});
+				formData.append('files', e.dataTransfer.files[i])
+				
                 toast({title : `File ${e.dataTransfer.files[i].name} has uploading`})
 			}
+			mutation.mutate(formData)
 			// console.log([...data, ...files]);
 		}
 	}
@@ -157,11 +176,10 @@ const UploadDnd = (
           </span>
         </div>
       ))} */}
-	  				
-					<DataTable columns={columns} data={files} />
+					{data && <DataTable columns={columns} data={data!} token={token} team_id={team_id} />}
 				</div>
-
-				{/* <button
+{/* 
+				<button
     disabled={files.length === 0}
       className="bg-black rounded-lg p-2 mt-3 w-auto"
       onClick={handleSubmitFile}
