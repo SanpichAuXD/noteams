@@ -31,7 +31,6 @@ import {
 import { toast } from "@/components/ui/use-toast"
 import { Input } from "../ui/input"
 import { Calendar } from "../ui/calendar"
-import { useTaskStore } from "@/store/TaskStore"
 import { Task } from "./TaskCard"
 import { Textarea } from "../ui/textarea"
 import { TaskSchema } from "@/validator/task"
@@ -99,13 +98,12 @@ export function Kanbanform({column, token, team_id} : KanbanformProps) {
   },
   onSuccess : () => {
     console.log('success')
-    queryClient.invalidateQueries({queryKey : ['tasks']})
+    queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
 },
 onError : (error) => {
 console.log(error.response?.data.message)
 }
   })
-  const addTask = useTaskStore((state)=> state.addTask)
   function onSubmit(data: z.infer<typeof TaskSchema>) {
       const date = data?.dueDate?.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
     const formData = new FormData()

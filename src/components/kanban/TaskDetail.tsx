@@ -41,14 +41,13 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "../ui/input";
 import { Calendar } from "../ui/calendar";
-import { useTaskStore } from "@/store/TaskStore";
 import { Task } from "./TaskCard";
 import { Textarea } from "../ui/textarea";
 import { TaskSchema } from "@/validator/task"
 import { useMutation , useQueryClient} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { IFormattedErrorResponse } from "@/type/type";
-import { updateTask } from "@/api-caller/task"
+import { deleteTask, updateTask } from "@/api-caller/task"
 import { TeamRequest } from "@/type/team";
 const status = [
 	{ label: "Todo", value: "TODO" },
@@ -90,14 +89,13 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 	  },
 	  onSuccess : () => {
 		console.log('success')
-		queryClient.invalidateQueries({queryKey : ['tasks']})
+		queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
 	},
 	onError : (error) => {
 	console.log(error.response?.data.message)
 	}
 	  })
 
-	const {  deleteTask } = useTaskStore();
 	function onSubmit(data: z.infer<typeof TaskSchema>) {
 		console.log(data);
 		const formData = new FormData();
@@ -371,7 +369,12 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 						<DialogFooter>
 							<Button
 								variant="destructive"
-								onClick={() => deleteTask(task.task_id as string)}
+								onClick={()=>{
+									deleteTask({token,team_id,task_id : task.task_id as string})
+									queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
+								
+								}}
+								// onClick={() => deleteTask(task.task_id as string)}
 							>
 								Delete
 							</Button>

@@ -6,12 +6,11 @@ import { cookies } from 'next/headers'
 import Image from 'next/image'
 
 export default async function Home({ params }: { params: { teamId: string } }) {
-  console.log(params.teamId)
   const cookie = cookies().get("accessToken")?.value!;
 	
 	const queryClient  = new QueryClient();
 	await queryClient.prefetchQuery({
-		queryKey: ["task"],
+		queryKey: [`task-${params.teamId}`],
 		queryFn: async()=> getAllTask({token: cookie, team_id : params.teamId}),
 	  });
   return (

@@ -23,13 +23,12 @@ import type { Column } from "./BoardColumn";
 import { hasDraggableData } from "@/lib/utils";
 import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 import { Button } from "../ui/button";
-import { useTaskStore } from "@/store/TaskStore";
 import { useGetAllTask } from "@/store/TaskState";
 import { createTask, updateStatusTask } from "@/api-caller/task";
 import { IFormattedErrorResponse } from "@/type/type";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { TeamRequest } from "@/type/team";
+import { CreateTeamRequest, GetTeamType, TeamRequest } from "@/type/team";
 import { updateStatusTaskRequest } from "@/type/task";
 
 const defaultCols = [
@@ -57,6 +56,7 @@ export function KanbanBoard({token, team_id} : kanbanPropType) {
   // const { tasks, addTask, setTasks} = useTaskStore()
   const {data, isPending} = useGetAllTask(token, team_id)
   const queryClient = useQueryClient()
+  const isOwner = queryClient.getQueryData<GetTeamType>(['team'])?.user_role === 'OWNER'
   const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,updateStatusTaskRequest>({
     mutationFn : async ({task_id , status} : updateStatusTaskRequest) => {
       const {data} = await updateStatusTask({task_id , status, team_id, token});
@@ -64,7 +64,7 @@ export function KanbanBoard({token, team_id} : kanbanPropType) {
   },
   onSuccess : () => {
     console.log('success')
-    queryClient.invalidateQueries({queryKey : ['tasks']})
+    queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
 },
 onError : (error) => {
 console.log(error.response?.data.message)
@@ -271,6 +271,10 @@ console.log(error.response?.data.message)
   }
 
   function onDragEnd(event: DragEndEvent) {
+    // console.log(activeColumn, activeTask, 'araiwa')
+    if(isOwner){
+    mutation.mutate({task_id : activeTask?.task_id as string, status : activeTask?.task_status ? activeTask.task_status : activeColumn?.id as ColumnId})
+    }
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -293,7 +297,7 @@ console.log(error.response?.data.message)
       const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
 
       const overColumnIndex = columns.findIndex((col) => col.id === overId);
-
+      console.log(activeColumnIndex, overColumnIndex, 'araiwa')
       return arrayMove(columns, activeColumnIndex, overColumnIndex);
     });
   }
@@ -336,7 +340,9 @@ console.log(error.response?.data.message)
     //call api here
     if (isActiveATask && isOverATask) {
       console.log('araiwa')
+      if(isOwner){
       changePrior(data!)
+      }
       // console.log(tasks)
         // setTasks(changePrior(tasks))
     //  setTasks((tasks : Task[]) => {
@@ -364,7 +370,7 @@ console.log(error.response?.data.message)
         if (activeTask) {
           activeTask.task_status = overId as ColumnId;
           console.log(activeTask.task_status, activeTask.task_id)
-          mutation.mutate({task_id : activeTask.task_id as string, status : activeTask.task_status})
+          // mutation.mutate({task_id : activeTask.task_id as string, status : activeTask.task_status})
           return arrayMove(task, activeIndex, activeIndex);
         }
         return task;
@@ -372,8 +378,9 @@ console.log(error.response?.data.message)
     //call api here
     // Im dropping a Task over a column
     if (isActiveATask && isOverAColumn) {
-      
+      if(isOwner){
       changeColumn(data!)
+      }
         // setTasks(changeColumn(tasks))
     }
   }

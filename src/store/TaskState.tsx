@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllTask = (token : string, team_id  : string) =>{
     return useQuery<Task[],IFormattedErrorResponse>({
-        queryKey: ['tasks'],
+        queryKey: [`task-${team_id}`],
         queryFn : async () => {
             const response  = await getAllTask({token, team_id});
             console.log('we are fetching')
