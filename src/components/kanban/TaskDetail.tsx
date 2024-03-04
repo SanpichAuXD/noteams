@@ -116,7 +116,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 			formData.append("task_desc", data.description || "");
 			formData.append("task_status", data.status);
 			formData.append("user_id", data.assignee || "");
-			formData.append("task_deadline", data.dueDate?.toDateString() || "");
+			formData.append("task_deadline", data.dueDate !== undefined && date ?  `${date[2]}-${date[0]}-${date[1]}` : "");
 			mutation.mutate(formData)
 			// updateTask(taskdata);
 			toast({
