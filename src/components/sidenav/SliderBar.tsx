@@ -5,9 +5,11 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Users, KanbanSquare,LogOut} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatCookie } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { error } from "console";
+import destr from "destr";
+import { SignupRequest } from "@/type/user";
 
 // Define the Sidenav component
 type SidenavProps = {
@@ -17,13 +19,15 @@ type SidenavProps = {
 export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	// Define state for sidebar expansion
 	const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
+	const [cookie, setCookie] = useState('')
 	const router = useRouter();
-
+	// const cookie = formatCookie(document.cookie)
+    const {username} = (destr<SignupRequest>(cookie))
 	// Create a reference to the sidebar element
 	const sidebar = useRef(null);
 	// Effect to add or remove a class to the body element based on sidebar expansion
 	useEffect(() => {
+		setCookie(formatCookie(document.cookie))
 		if (sidebarExpanded) {
 			document.querySelector("body")?.classList.add("sidebar-expanded");
 		} else {
@@ -103,13 +107,6 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
-              href="/kanban"
-              icon={<KanbanSquare size={40} />}
-              label="Kanban Board"
-            // //   setSidebarOpen={setSidebarOpen}
-              sidebarExpanded={sidebarExpanded}
-            />
-            <NavItem
               href="/calendar"
               icon={<Calendar size={40} />}
               label="Calendar"
@@ -151,10 +148,10 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 					<div className="flex-1" />
 					<div className="px-3 py-2 w-full text-center  space-y-5">
 						<div className={`flex ${sidebarExpanded ? "flex-col items-center space-y-4" : "flex-row justify-between"}`}>
-							<div className="inline-block">
+							<div className="inline-block ">
 
 							
-							<p><User className="inline-block" size={40} /> {!sidebarExpanded && ": XD"}</p>
+							<p className="text-sm"><User className="inline-block" size={40} /> {!sidebarExpanded && `${username} `}</p>
 							</div>
 						<button
 							onClick={() => setSidebarExpanded(!sidebarExpanded)}

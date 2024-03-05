@@ -67,7 +67,7 @@ export function isResponseError<T>(respone: T | IFormattedErrorResponse): respon
 
 
 export function formatCookie(cookie : string): string {
-  return cookie.split(";")[0].split("=")[1].replaceAll('%22','"').replaceAll('%7B','{').replaceAll('%7D','}').replaceAll('%3A',':').replaceAll('%2C', ',');
+  return decodeURIComponent(cookie.split(";")[0].split("=")[1]);
 }
 
 
