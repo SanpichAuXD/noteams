@@ -52,9 +52,11 @@ type Props = {
 const AddTeamsBox = ({token}: Props) => {
 	const {toast} = useToast();
 	const queryClient = useQueryClient()
+	const [team_id, setTeamId] = React.useState<string>('');
 	const mutation = useMutation<CreateTeamResponse,AxiosError<IFormattedErrorResponse>,TypedFormData<CreateTeamRequest>>({
         mutationFn : async (formData) => {
-            const {data} = await createTeam({ token, formData });
+            const data = await createTeam({ token, formData });
+			setTeamId(data.team_id);
             return data;
         },
         onSuccess : () => {
@@ -63,8 +65,8 @@ const AddTeamsBox = ({token}: Props) => {
 			setFormStep(1);
         },
 		onError : (error) => {
-			console.log(error.response?.data.message)
-			toast({title : error.response?.data.message})
+			console.log(error.message)
+			toast({title : error.message})
 		}
         
     });
@@ -79,6 +81,22 @@ const AddTeamsBox = ({token}: Props) => {
 		},
 	});
 
+	const searching = async (value: string) => {
+		
+		  try {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/find?username=&email=${value}`, {
+			headers: {
+			  "Authorization": `Bearer ${token}`
+			}
+			});
+			return await res.json();
+		  } catch (error) {
+			console.error("Error fetching user data:", error);
+			throw error;
+		  }
+		  
+	  }
+
 	// 2. Define a submit handler.
 	function OnSubmit(values: z.infer<typeof teamsSchema>) {
 		const {team_code,team_name,team_desc} = values
@@ -86,13 +104,14 @@ const AddTeamsBox = ({token}: Props) => {
 		formData.append("team_name", team_name);
 		formData.append("team_desc", team_desc || '');
 		formData.append("team_code", team_code);
-		mutation.mutate(formData);
+		const data = mutation.mutate(formData);
+		console.log(data)
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		console.log(values);
 	}
 	return (
-			<Dialog>
+			<Dialog >
 				<DialogTrigger className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 					<Plus size={40} />
 				</DialogTrigger>
@@ -183,7 +202,7 @@ const AddTeamsBox = ({token}: Props) => {
 							</div>) :
 							(
 								<>
-								<SearchUserInput />
+								<SearchUserInput token={token} searchfn={searching} team_id={team_id}/>
 								<div className="text-end">
 
 							<DialogClose asChild>
