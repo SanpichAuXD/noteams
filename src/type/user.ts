@@ -38,4 +38,6 @@ export type User = {
 export type MemberUser =  {member_id: string
 username: string
 email: string
-role : 'OWNER' | 'MEMBER'}
+role : 'OWNER' | 'MEMBER'
+user_id: string
+}

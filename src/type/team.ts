@@ -33,3 +33,26 @@ export type SettingRequest = {
     permissionType : 'task' | 'file' | 'invite';
     value : boolean;
 }
+
+
+export type TeamData = CreateTeamRequest & {
+    team_poster : string;
+}
+
+export type TeamSetting = {
+    allow_task : boolean;
+    allow_file : boolean;
+    allow_invite : boolean;
+
+}
+
+export type GetSettingResponse = TeamData & TeamSetting;
+
+
+export type TeamFile = {
+    file_id : string;
+    file_name : string;
+    file_url : string;
+    username : string;
+    created_at : string;
+}
