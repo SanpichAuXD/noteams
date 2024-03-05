@@ -49,7 +49,7 @@ export function MemberTable<TData, TValue>({
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
 	const client = useQueryClient();
-	const team = client.getQueryData<GetTeamType>(["team"]);
+	const team = client.getQueryData<GetTeamType>([`team-${team_id}`]);
 
 	const { data: member } = useQuery({
 		queryKey: [`member-${team_id}`],

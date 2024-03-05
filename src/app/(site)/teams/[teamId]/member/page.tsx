@@ -6,6 +6,7 @@ import { cookies } from 'next/headers'
 import { getmemberByTeamId } from '@/api-caller/team'
 import { HydrationBoundary, QueryClient, dehydrate, useQueryClient } from "@tanstack/react-query";
 import { MemberTable } from './data-table'
+import WithAuth from '@/components/ui/WithAuth'
 
 type Props = {}
 const File  = async({ params }: { params: { teamId: string } }) => {
@@ -26,4 +27,4 @@ const File  = async({ params }: { params: { teamId: string } }) => {
   )
 }
 
-export default File
+export default WithAuth(File)
