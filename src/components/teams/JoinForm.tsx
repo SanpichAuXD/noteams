@@ -22,6 +22,8 @@ import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData"
 import { getUserCookie } from "@/lib/utils"
 import destr from "destr"
 import { SignupRequest } from "@/type/user"
+import { IFormattedErrorResponse } from "@/type/type"
+import { joinTeams } from "@/api-caller/team"
 
 const FormSchema = z.object({
   code: z.string().min(6, {
@@ -41,24 +43,21 @@ export function JoinForm({token}: Props) {
     },
   })
   const queryClient = useQueryClient()
-  const mutation = useMutation< Error, JoinTeamRequest>({
+  const mutation = useMutation< CreateTeamResponse,IFormattedErrorResponse>({
     mutationFn : async () => {
       const formData : TypedFormData<JoinTeamRequest> = getTypedFormData()
       const {user_id} = (destr<SignupRequest>(getUserCookie()))
       formData.append("team_code",form.getValues('code'))
       formData.append("user_id",user_id)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/join`, {
-        method : 'POST',
-        body : formData as FormData,
-        headers : {
-          "Authorization" : `Bearer ${token}`
-        }
-      })
-        return await response.json();
+      const data = await joinTeams(token,formData)
+      return data;
   },
   onSuccess : () => {
       console.log('success')
-      queryClient.invalidateQueries({queryKey : ['team']})
+      queryClient.invalidateQueries({queryKey : [`hydrate-team`]})
+  },
+  onError : (error) => {
+    toast({title : error.message})
   }
 })
   function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -78,9 +77,9 @@ export function JoinForm({token}: Props) {
                 <Input placeholder="Enter your code" {...field} />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
+              </FormItem>
+              )}
+              />
         <Button type="submit">Submit</Button>
       </form>
     </Form>
