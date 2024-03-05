@@ -24,6 +24,9 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
 import { Kanbanform } from './Kanbanform';
+import { MemberUser } from "@/type/user";
+import { useQuery } from "@tanstack/react-query";
+import { getmemberByTeamId } from "@/api-caller/team";
 
 export interface Column {
 	id: UniqueIdentifier;
@@ -41,7 +44,7 @@ interface BoardColumnProps {
 	column: Column;
 	tasks: Task[];
 	isOverlay?: boolean;
-	addTask?: (task: Task) => void;
+	member  : MemberUser[];
 	token: string;
 	team_id : string;
 }
@@ -50,7 +53,7 @@ export function BoardColumn({
 	column,
 	tasks,
 	isOverlay,
-	addTask,
+	member,
 	token,
 	team_id
 }: BoardColumnProps) {
@@ -73,6 +76,13 @@ export function BoardColumn({
 		attributes: {
 			roleDescription: `Column: ${column.title}`,
 		},
+	});
+	const { data: members } = useQuery<MemberUser[]>({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
+		},
+		initialData: member,
 	});
 
 	const style = {

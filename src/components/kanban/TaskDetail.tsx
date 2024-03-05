@@ -44,11 +44,13 @@ import { Calendar } from "../ui/calendar";
 import { Task } from "./TaskCard";
 import { Textarea } from "../ui/textarea";
 import { TaskSchema } from "@/validator/task"
-import { useMutation , useQueryClient} from "@tanstack/react-query";
+import { useMutation , useQuery, useQueryClient} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { IFormattedErrorResponse } from "@/type/type";
 import { deleteTask, updateTask } from "@/api-caller/task"
 import { TeamRequest } from "@/type/team";
+import { getmemberByTeamId } from "@/api-caller/team";
+import { MemberUser } from "@/type/user";
 const status = [
 	{ label: "Todo", value: "TODO" },
 	{ label: "In Progress", value: "DOING" },
@@ -71,6 +73,12 @@ type KanbanformProps = {
 	
 };
 export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest) {
+	const { data: members } = useQuery<MemberUser[]>({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
+		},
+	});
 	const form = useForm<z.infer<typeof TaskSchema>>({
 		resolver: zodResolver(TaskSchema),
 		defaultValues: {
@@ -309,11 +317,11 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 											)}
 										>
 											{field.value
-												? member.find(
+												? members!.find(
 														(member) =>
-															member.value ===
+															member.user_id ===
 															field.value
-												  )?.label
+												  )?.username
 												: "Select status..."}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -326,27 +334,27 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 											No status found.
 										</CommandEmpty>
 										<CommandGroup>
-											{member.map((state) => (
+											{members!.map((state) => (
 												<CommandItem
-													value={state.label}
-													key={state.value}
+													value={state.user_id}
+													key={state.member_id}
 													onSelect={() => {
 														form.setValue(
 															"assignee",
-															state.value
+															state.user_id
 														);
 													}}
 												>
 													<Check
 														className={cn(
 															"mr-2 h-4 w-4",
-															state.value ===
+															state.user_id ===
 																field.value
 																? "opacity-100"
 																: "opacity-0"
 														)}
 													/>
-													{state.label}
+													{state.username}
 												</CommandItem>
 											))}
 										</CommandGroup>

@@ -34,11 +34,13 @@ import { Calendar } from "../ui/calendar"
 import { Task } from "./TaskCard"
 import { Textarea } from "../ui/textarea"
 import { TaskSchema } from "@/validator/task"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AxiosError } from "axios";
 import { IFormattedErrorResponse } from "@/type/type";
 import { ColumnId } from "./KanbanBoard"
 import { createTask } from "@/api-caller/task"
+import { MemberUser } from "@/type/user"
+import { getmemberByTeamId } from "@/api-caller/team"
 
 const status = [
   { label: "Todo", value: "TODO" },
@@ -80,6 +82,12 @@ type KanbanformProps = {
   team_id : string;
 }
 export function Kanbanform({column, token, team_id} : KanbanformProps) {
+  const { data: members } = useQuery<MemberUser[]>({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
+		},
+	});
   const form = useForm<z.infer<typeof TaskSchema>>({
     resolver: zodResolver(TaskSchema),
     defaultValues: {
@@ -112,6 +120,7 @@ console.log(error.response?.data.message)
     formData.append("task_status", data.status)
     formData.append("user_id", data.assignee || "")
     formData.append("task_deadline", data.dueDate != undefined && date ? `${date[2]}-${date[0]}-${date[1]}` : "")
+    console.log(formData)
     mutation.mutate(formData)
     //   const task : Task  = {
   //     task_id: `task-${Math.random()}`,
@@ -286,9 +295,9 @@ console.log(error.response?.data.message)
                       )}
                     >
                       {field.value
-                        ? member.find(
-                            (member) => member.value === field.value
-                          )?.label
+                        ? members!.find(
+                            (member) => member.user_id === field.value
+                          )?.username
                         : "Select status..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -299,23 +308,23 @@ console.log(error.response?.data.message)
                     <CommandInput placeholder="Search assignee" />
                     <CommandEmpty>No status found.</CommandEmpty>
                     <CommandGroup>
-                      {member.map((state) => (
+                      {members!.map((state) => (
                         <CommandItem
-                          value={state.label}
-                          key={state.value}
+                          value={state.user_id}
+                          key={state.member_id}
                           onSelect={() => {
-                            form.setValue("assignee", state.value)
+                            form.setValue("assignee", state.user_id)
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              state.value === field.value
+                              state.user_id === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
                           />
-                          {state.label}
+                          {state.username}
                         </CommandItem>
                       ))}
                     </CommandGroup>

@@ -30,6 +30,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { CreateTeamRequest, GetTeamType, TeamRequest } from "@/type/team";
 import { updateStatusTaskRequest } from "@/type/task";
+import { MemberUser } from "@/type/user";
 
 const defaultCols = [
   {
@@ -51,8 +52,9 @@ export type ColumnId = (typeof defaultCols)[number]["id"];
 export type kanbanPropType = {
   token : string;
   team_id : string;
+  member : MemberUser[];
 }
-export function KanbanBoard({token, team_id} : kanbanPropType) {
+export function KanbanBoard({token, team_id, member} : kanbanPropType) {
   // const { tasks, addTask, setTasks} = useTaskStore()
   const {data, isPending} = useGetAllTask(token, team_id)
   const queryClient = useQueryClient()
@@ -223,6 +225,7 @@ console.log(error.response?.data.message)
               column={col}
               tasks={data.filter((task) => task.task_status === col.id)}
               // addTask={}
+              member={member}
               token={token}
               team_id={team_id}
             />
@@ -241,6 +244,7 @@ console.log(error.response?.data.message)
                 column={activeColumn}
                 // addTask={addTask}
                 token={token}
+                member={member}
                 team_id={team_id}
                 tasks={data.filter(
                     (task) => task.task_status === activeColumn.id
