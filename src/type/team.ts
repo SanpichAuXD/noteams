@@ -2,6 +2,7 @@ export type GetTeamsType = {
     team_id : string;
     team_name: string;
     team_poster: string;
+    role : 'OWNER' | 'MEMBER';
 }
 
 export type GetTeamType = GetTeamsType & {user_role : 'OWNER' | 'MEMBER' }

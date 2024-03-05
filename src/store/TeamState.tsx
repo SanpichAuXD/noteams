@@ -17,11 +17,9 @@ export const useGetAllTeam = (token : string) =>{
 
 export const useTeam = (token : string, team_id : string) => {
     return useQuery<GetTeamType,IFormattedErrorResponse>({
-        queryKey : ['team'],
+        queryKey : [`team-${team_id}`],
         queryFn : async () => await getTeamById(token,team_id),
-        staleTime : 1000,
-        refetchOnReconnect : true,
-
+        staleTime : Infinity,
     })
 }
 
@@ -34,10 +32,19 @@ export const useCreateTeam = (token : string, formData : TypedFormData<CreateTea
         },
         onSuccess : () => {
             console.log('success')
-            queryClient.invalidateQueries({queryKey : ['team']})
+            queryClient.invalidateQueries({queryKey : ['hydrate-team']})
         }
         
     })
 }
 
 
+export const useMemberTeam = (token : string, team_id : string) => {
+    return useQuery<GetTeamType,IFormattedErrorResponse>({
+        queryKey : ['member_team'],
+        queryFn : async () => await getTeamById(token,team_id),
+        staleTime : 1000,
+        refetchOnReconnect : true,
+
+    })
+}
