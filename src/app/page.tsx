@@ -6,7 +6,7 @@ type Props = {}
 
 const Home = (props: Props) => {
   return (
-    redirect('/signin')
+    redirect('/teams')
   )
 }
 

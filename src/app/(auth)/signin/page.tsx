@@ -5,8 +5,9 @@ type Props = {};
 import SignIn from "@/components/auth/SignIn";
 import { cookies } from "next/headers";
 import { SignInResponse } from "@/type/user";
+import WithoutAuth from "@/components/ui/WithoutAuth";
 
-export default function Login(props: Props) {
+function SigninPage(props: Props) {
 	async function setCookie(data: SignInResponse) {
 		"use server";
 		cookies().set({
@@ -59,3 +60,6 @@ export default function Login(props: Props) {
 		</div>
 	);
 }
+
+
+export default WithoutAuth(SigninPage)

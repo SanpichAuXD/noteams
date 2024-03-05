@@ -22,7 +22,7 @@ import destr from "destr";
 import { Copy, Plus } from "lucide-react";
 import { cookies } from "next/headers";
 import React, { use } from "react";
-import WithAuth from './../../../components/ui/WithAuth';
+import WithAuth from '@/components/ui/WithAuth';
 
 const Teams = async() => {
 	const cookie = cookies().get("accessToken")?.value!;
@@ -30,7 +30,7 @@ const Teams = async() => {
 	const queryClient  = new QueryClient();
 	await queryClient.prefetchQuery({
 		queryKey: ["hydrate-team"],
-		queryFn: async()=> getTeams(cookie),
+		queryFn: ()=> getTeams(cookie),
 	  });
 	
 	
