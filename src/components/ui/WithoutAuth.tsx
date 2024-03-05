@@ -6,11 +6,12 @@ import React from "react";
 
 type Props = {};
 
-function WithAuth<T>(Component: React.ComponentType<T>) {
+function WithoutAuth<T>(Component: React.ComponentType<T>) {
     const WithAuthComponent = (props: T) => {
         const token = cookies().get("accessToken")?.value;
-        if (!token) {
-            return redirect("/signin");
+        
+        if (token) {
+            return redirect("/");
         }
         return( <>
         <Component {...props!} />
@@ -23,4 +24,4 @@ function WithAuth<T>(Component: React.ComponentType<T>) {
     return WithAuthComponent;
 }
 
-export default WithAuth;
+export default WithoutAuth;
