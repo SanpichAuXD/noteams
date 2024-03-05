@@ -2,7 +2,6 @@
 "use client";
 import React, { use } from "react";
 import { Button } from "../ui/button";
-import { useFileStore } from "@/store/FileStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IFormattedErrorResponse } from "@/type/type";
 import { TeamFile } from "@/type/team";

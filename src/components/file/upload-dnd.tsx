@@ -57,7 +57,7 @@ const UploadDnd = (
 			queryClient.invalidateQueries({ queryKey: ["hydrate-file"] });
 		},
 		onError: (error) => {
-			console.log(error);
+			toast({title : error.message, variant : 'destructive'})
 		},
 	});
 

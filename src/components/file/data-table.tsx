@@ -36,7 +36,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useFileStore } from "@/store/FileStore";
 import { IFormattedErrorResponse } from "@/type/type";
 import { deleteFile } from "@/api-caller/file";
 import { useToast } from "../ui/use-toast";

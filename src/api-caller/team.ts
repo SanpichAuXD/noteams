@@ -5,6 +5,7 @@ import destr from "destr";
 import { TypedFormData } from '@/lib/CustomFormData';
 import { CreateTeamRequest, CreateTeamResponse, GetSettingResponse, GetTeamsType, JoinTeamRequest, SettingRequest, TeamData, TeamRequest } from "@/type/team";
 import { IFormattedErrorResponse } from "@/type/type";
+import { error } from 'console';
 export async function getTeams(token:string) : Promise<GetTeamsType[]
 // | IFormattedErrorResponse
 >{
@@ -90,10 +91,10 @@ export const joinTeams = async (token : string, formData : TypedFormData<JoinTea
        throw formattedError(error)
    }
 }
-export const inviteMember = async (token : string, team_id : string, email : string[]) => {
+export const inviteMember = async ({ token, team_id, users }: { token: string; team_id: string; users: string[]; }) => {
     try{
 
-    const {data} = await getInstance().post(`/teams/invite/${team_id}`, {users : email},{
+    const {data} = await getInstance().post(`/teams/invite/${team_id}`, {users},{
         headers:{ 
             "Authorization" : `Bearer ${token}`
         }})
@@ -161,12 +162,37 @@ catch(error){
 }
 
 
+export const deleteTeam = async (token : string, team_id : string) => {
+    try{
+        const {data} = await getInstance().delete(`/teams/${team_id}`, {
+            headers:{
+                "Authorization" : `Bearer ${token}`
+            }
+        })
+        return data;
+    }catch(error){
+        throw formattedError(error)
+    }
+}
 
 
-export const updateCodeTeam = async ({token,team_id, code} : TeamRequest & {code : string}) => {
+export const UpdateTeamPermission = async ({token,team_id,permissionType,value} : TeamRequest & SettingRequest) => {
+    try{
+        const {data} = await getInstance().put(`/teams/permission/${team_id}`, {permission_type : permissionType, value}, {
+            headers:{
+                "Authorization" : `Bearer ${token}`
+            }
+        })
+        return data;
+    }catch(error){
+        throw formattedError(error)
+    }
+}
+
+export const updateCodeTeam = async ({token,team_id, team_code} : TeamRequest & {team_code : string}) => {
     try{
 
-    const {data} = await getInstance().put(`/teams/${team_id}/code`, {code}, {
+    const {data} = await getInstance().put(`/teams/code/${team_id}`, {team_code}, {
         headers:{
             "Authorization" : `Bearer ${token}`
         }})
@@ -174,4 +200,18 @@ export const updateCodeTeam = async ({token,team_id, code} : TeamRequest & {code
     }catch(error){
         throw formattedError(error)
     }
+}
+
+
+export const LeaveTeam = async (token : string, team_id : string) => {
+    try{
+
+        const {data} = await getInstance().put(`/teams/exit/${team_id}`, {
+            headers:{
+                "Authorization" : `Bearer ${token}`
+            }})
+            return data;
+        }catch(error){
+            throw formattedError(error)
+        }
 }
