@@ -20,7 +20,7 @@ const RenderTeamBox = ({token}: Props) => {
   return (
     <>
     {data && data.map(({team_id,team_poster,team_name}: GetTeamsType, i: number)=>{
-					return <TeamsBox key={i} id={team_id} image={team_poster} title={team_name} />
+					return <TeamsBox key={i} token={token} id={team_id} image={team_poster} title={team_name} />
 				})}
     </>
   )
