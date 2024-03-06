@@ -58,7 +58,7 @@ export function KanbanBoard({token, team_id, member} : kanbanPropType) {
   // const { tasks, addTask, setTasks} = useTaskStore()
   const {data, isPending} = useGetAllTask(token, team_id)
   const queryClient = useQueryClient()
-  const isOwner = queryClient.getQueryData<GetTeamType>(['team'])?.user_role === 'OWNER'
+  const isOwner = queryClient.getQueryData<GetTeamType>([`team-${team_id}`])?.user_role === 'OWNER'
   const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,updateStatusTaskRequest>({
     mutationFn : async ({task_id , status} : updateStatusTaskRequest) => {
       const {data} = await updateStatusTask({task_id , status, team_id, token});
@@ -72,7 +72,6 @@ onError : (error) => {
 console.log(error.response?.data.message)
 }
   })
-  // console.log(data)
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpTaskColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
