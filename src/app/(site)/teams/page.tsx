@@ -24,6 +24,7 @@ import { cookies } from "next/headers";
 import React, { use } from "react";
 import WithAuth from '@/components/ui/WithAuth';
 
+
 const Teams = async() => {
 	const cookie = cookies().get("accessToken")?.value!;
 	
@@ -54,6 +55,7 @@ const Teams = async() => {
 				</Dialog>
 			</header>
 			<section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5   gap-8 ">
+
 				<AddTeamsBox token={cookie}/>
 				<HydrationBoundary state={dehydrate(queryClient)}>
 

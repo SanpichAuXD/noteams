@@ -65,6 +65,7 @@ export function isResponseError<T>(respone: T | IFormattedErrorResponse): respon
   return !!(respone as IFormattedErrorResponse).message
 }
 
+
 export function getProperty<T, K extends keyof T>(obj: T, key: K) {
 	return obj[key];
 }

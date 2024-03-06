@@ -6,13 +6,13 @@ import { registerSchema } from "@/validator/auth";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { redirect, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -24,11 +24,11 @@ import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData";
 import { useToast } from "@/components/ui/use-toast";
 import { cn, isResponseError } from "@/lib/utils";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../ui/select";
 import { ArrowRight, CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -37,19 +37,20 @@ import { Calendar } from "../ui/calendar";
 type Props = {};
 
 const SignUp = (props: Props) => {
-	const { toast } = useToast();
-	const [formStep, setFormStep] = useState(0);
-	const form = useForm<z.infer<typeof registerSchema>>({
-		resolver: zodResolver(registerSchema),
-		defaultValues: {
-			username: "",
-			email: "",
-			password: "",
-			cfpassword: "",
-			phone: "",
-			dob: new Date(),
-		},
-	});
+  const { toast } = useToast();
+  const [formStep, setFormStep] = useState(0);
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      cfpassword: "",
+      phone: "",
+      dob: new Date(),
+    },
+  });
+
 
 	const ValidateBeforeNext = async () => {
 		// Trigger validation for the relevant fields
@@ -120,238 +121,216 @@ const SignUp = (props: Props) => {
 					className="space-y-2 px-[15%] relative space-x-8
 						overflow-x-hidden
 						"
-				>
-					<div
-						className={cn(
-							"space-y-3 transition-transform transform translate-x-0 ease-in-out duration-300 ",
-							{
-								"transform -translate-x-[140%]": formStep !== 0,
-							}
-						)}
-					>
-						<FormField
-							control={form.control}
-							name="username"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Username</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Enter your username"
-											{...field}
-										/>
-									</FormControl>
+        >
+          <div
+            className={cn(
+              "space-y-3 transition-transform transform translate-x-0 ease-in-out duration-300 ",
+              {
+                "transform -translate-x-[140%]": formStep !== 0,
+              }
+            )}
+          >
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your username" {...field} />
+                  </FormControl>
 
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="email"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Enter your email"
-											{...field}
-										/>
-									</FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your email" {...field} />
+                  </FormControl>
 
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-					<div
-						className={cn(
-							"space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
-							{
-								"transform translate-x-full ": formStep !== 1,
-							},
-							{
-								"transform -translate-x-[140%]": formStep >= 2,
-							}
-						)}
-					>
-						{/* birthday */}
-						<FormField
-							control={form.control}
-							name="dob"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Year</FormLabel>
-									<div className="flex  items-center gap-8">
-										<Popover>
-											<PopoverTrigger asChild>
-												<FormControl>
-													<Button
-														variant={"outline"}
-														className={cn(
-															"w-[240px] pl-3 text-left font-normal",
-															!field.value &&
-																"text-muted-foreground"
-														)}
-													>
-														{field.value ? (
-															format(
-																field.value,
-																"PPP"
-															)
-														) : (
-															<span>
-																Pick a date
-															</span>
-														)}
-														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-													</Button>
-												</FormControl>
-											</PopoverTrigger>
-											<PopoverContent
-												className="w-auto p-0"
-												align="start"
-											>
-												<Calendar
-													mode="single"
-													selected={field.value}
-													onSelect={field.onChange}
-													disabled={(date) =>
-														date > new Date() ||
-														date <
-															new Date(
-																"1900-01-01"
-															)
-													}
-													captionLayout="dropdown-buttons"
-													fromYear={1950}
-													toYear={2025}
-													initialFocus
-												/>
-											</PopoverContent>
-										</Popover>
-									</div>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						{/* </div> */}
-						{/* birthday */}
-						{/* phone */}
-						<FormField
-							control={form.control}
-							name="phone"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Phone</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Enter your phone number"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-					<div
-						className={cn(
-							"space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
-							{
-								"transform translate-x-full ": formStep !== 2,
-							},
-							{
-								"transform -translate-x-full": formStep >= 3,
-							}
-						)}
-					>
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Password</FormLabel>
-									<FormControl>
-										<PasswordInput
-											placeholder="Enter your password"
-											{...field}
-										/>
-									</FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div
+            className={cn(
+              "space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+              {
+                "transform translate-x-full ": formStep !== 1,
+              },
+              {
+                "transform -translate-x-[140%]": formStep >= 2,
+              }
+            )}
+          >
+            {/* birthday */}
+            <FormField
+              control={form.control}
+              name="dob"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Year</FormLabel>
+                  <div className="flex  items-center gap-8">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          captionLayout="dropdown-buttons"
+                          fromYear={1950}
+                          toYear={2025}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* </div> */}
+            {/* birthday */}
+            {/* phone */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your phone number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div
+            className={cn(
+              "space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+              {
+                "transform translate-x-full ": formStep !== 2,
+              },
+              {
+                "transform -translate-x-full": formStep >= 3,
+              }
+            )}
+          >
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
 
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="cfpassword"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Confirm Password</FormLabel>
-									<FormControl>
-										<PasswordInput
-											placeholder="Enter your password"
-											{...field}
-										/>
-									</FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cfpassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
 
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-					<div
-						className={cn("flex justify-between relative pt-14 ", {
-							"justify-end": formStep == 0,
-						})}
-					>
-						{/* flex gap-2 relative pt-28 */}
-						<Button
-							type="button"
-							variant={"ghost"}
-							onClick={() => {
-								setFormStep(formStep - 1);
-							}}
-							className={cn({
-								hidden: formStep == 0,
-							})}
-						>
-							Go Back
-						</Button>
-						<Button
-							type="submit"
-							className={cn({
-								hidden: formStep !== 2,
-							})}
-						>
-							Register
-						</Button>
+          <div
+            className={cn("flex justify-between relative pt-14 ", {
+              "justify-end": formStep == 0,
+            })}
+          >
+            {/* flex gap-2 relative pt-28 */}
+            <Button
+              type="button"
+              variant={"ghost"}
+              onClick={() => {
+                setFormStep(formStep - 1);
+              }}
+              className={cn({
+                hidden: formStep == 0,
+              })}
+            >
+              Go Back
+            </Button>
+            <Button
+              type="submit"
+              className={cn({
+                hidden: formStep !== 2,
+              })}
+            >
+              Register
+            </Button>
 
-						<Button
-							type="button"
-							variant={"outline"}
-							className={cn("text-end", {
-								hidden: formStep == 2,
-							})}
-							onClick={() => ValidateBeforeNext()}
-						>
-							Next
-							<ArrowRight className="ml-2 w-4 h-4" />
-						</Button>
-					</div>
-					<p className="text-center pt-5">
-						Already Have Account ?{" "}
-						<Link href={"/signin"} className="font-bold">
-							{" "}
-							Login
-						</Link>
-					</p>
-				</form>
-			</Form>
-		</div>
-	);
+            <Button
+              type="button"
+              variant={"outline"}
+              className={cn("text-end", {
+                hidden: formStep == 2,
+              })}
+              onClick={() => ValidateBeforeNext()}
+            >
+              Next
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </div>
+          <p className="text-center pt-5">
+            Already Have Account ?{" "}
+            <Link href={"/signin"} className="font-bold">
+              {" "}
+              Login
+            </Link>
+          </p>
+        </form>
+      </Form>
+    </div>
+  );
 };
 
 export default SignUp;

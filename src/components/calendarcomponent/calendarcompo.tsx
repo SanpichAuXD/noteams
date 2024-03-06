@@ -9,11 +9,11 @@ import { Dialog, Transition } from "@headlessui/react";
 const events = [
   // { title: "Meeting", start: new Date() },
   { id: "97", title: "Meetong1", start: "2024-02-01", description: "Meeting" },
-  { id: "98", title: "Meetong2", start: "2024-02-02", description: "Meeting" },
-  { id: "99", title: "Meetong3", start: "2024-02-03", description: "Meeting" },
-  { id: "100", title: "Meetong4", start: "2024-02-04", description: "Meeting" },
-  { id: "101", title: "Meetong5", start: "2024-02-05", description: "Meeting" },
-  { id: "102", title: "Meetong6", start: "2024-02-06", description: "Meeting" },
+  // { id: "98", title: "Meetong2", start: "2024-02-02", description: "Meeting" },
+  // { id: "99", title: "Meetong3", start: "2024-02-03", description: "Meeting" },
+  // { id: "100", title: "Meetong4", start: "2024-02-04", description: "Meeting" },
+  // { id: "101", title: "Meetong5", start: "2024-02-05", description: "Meeting" },
+  // { id: "102", title: "Meetong6", start: "2024-02-06", description: "Meeting" },
 ];
 
 interface Event {
