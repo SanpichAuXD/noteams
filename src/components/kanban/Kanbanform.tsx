@@ -298,7 +298,7 @@ console.log(error.response?.data.message)
                         ? members!.find(
                             (member) => member.user_id === field.value
                           )?.username
-                        : "Select status..."}
+                        : "Select members..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>

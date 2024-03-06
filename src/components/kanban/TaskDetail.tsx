@@ -322,7 +322,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 															member.user_id ===
 															field.value
 												  )?.username
-												: "Select status..."}
+												: "Select member..."}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
 									</FormControl>
