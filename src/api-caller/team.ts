@@ -1,21 +1,20 @@
 import { getInstance } from "@/api/apiClient";
-import {  formatCookie, formattedError} from "@/lib/utils";
+import {  formatCookie, formattedError,getCookieByName} from "@/lib/utils";
 import { SignupRequest } from "@/type/user";
 import destr from "destr";
 import { TypedFormData } from '@/lib/CustomFormData';
-import { CreateTeamRequest, CreateTeamResponse, GetSettingResponse, GetTeamsType, JoinTeamRequest, SettingRequest, TeamData, TeamRequest } from "@/type/team";
-import { IFormattedErrorResponse } from "@/type/type";
-import { error } from 'console';
+import { CreateTeamRequest, GetSettingResponse, GetTeamsType, JoinTeamRequest, SettingRequest, TeamRequest } from "@/type/team";
 export async function getTeams(token:string) : Promise<GetTeamsType[]
 // | IFormattedErrorResponse
 >{
     console.log(document.cookie,"from api caller")
     console.log('running get all team')
-    const cookie = formatCookie(document.cookie)
-    const {user_id} = (destr<SignupRequest>(cookie))
-    console.log(user_id,"from api caller")
+    // const cookie = formatCookie(document.cookie)
+    const cookie = getCookieByName("user")
+    const {user_id} = (destr<SignupRequest>(formatCookie(cookie)))
+    console.log(user_id,"cookie from api caller")
+    console.log(cookie,"from api caller")
     try{
-        console.log(user_id,"from api caller")
         const {data} = await getInstance().get(`/users/teams/${user_id}`, {
             headers:{
                 "Authorization" : `Bearer ${token}`
@@ -31,8 +30,8 @@ export async function getTeams(token:string) : Promise<GetTeamsType[]
 }
 
 export async function createTeam({ token, formData }: { token: string; formData: TypedFormData<CreateTeamRequest>; }){
-    const cookie = formatCookie(document.cookie)
-    const {user_id} = (destr<SignupRequest>(cookie))
+    const cookie = getCookieByName("user")
+    const {user_id} = (destr<SignupRequest>(formatCookie(cookie)))
     formData.append("owner_id",user_id)
     try{
 

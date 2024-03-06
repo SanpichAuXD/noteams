@@ -2,15 +2,15 @@ version: "3.8"
 
 services:
   next-app:
-    container_name: next-app
+    container_name: noteams-frontend  
+    image: sanpichxd/noteams-frontend:latest
     build:
-      context: ./next-app
-      dockerfile: prod-without-multistage.Dockerfile
+      context: .
+      dockerfile: Dockerfile
       args:
         ENV_API_URL: ${ENV_API_URL}
         NEXT_PUBLIC_ENV_API_URL: ${NEXT_PUBLIC_ENV_API_URL}
         NEXT_PUBLIC_JWT_SECRET_KEY: ${NEXT_PUBLIC_JWT_SECRET_KEY}
-    restart: always
     ports:
       - 3001:3000
     # networks:

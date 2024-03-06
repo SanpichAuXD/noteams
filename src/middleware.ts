@@ -39,7 +39,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 							// cookie will be accessible by client's JavaScript
 							httpOnly: true,
 							// cookie will be sent only over HTTPS
-							secure: true,
 						});
 						response.cookies.set({
 							name: "refreshToken",
@@ -49,7 +48,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 							// cookie will be accessible by client's JavaScript
 							httpOnly: true,
 							// cookie will be sent only over HTTPS
-							secure: true,
 						})
 						response.cookies.set({
 							name: "user",

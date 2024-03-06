@@ -22,7 +22,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	const [cookie, setCookie] = useState('')
 	const router = useRouter();
 	// const cookie = formatCookie(document.cookie)
-    const {username} = (destr<SignupRequest>(cookie))
+    const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
 	// Create a reference to the sidebar element
 	const sidebar = useRef(null);
 	// Effect to add or remove a class to the body element based on sidebar expansion
@@ -127,7 +127,10 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
             // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
 			  callApi={async()=> {
-					const response = await fetch('api/signout')
+					const response = await fetch('api/signout',{
+						method : 'POST',
+										
+					})
 					if (response.ok) {
 						router.push('/signin')
 					}

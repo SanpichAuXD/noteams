@@ -65,11 +65,21 @@ export function isResponseError<T>(respone: T | IFormattedErrorResponse): respon
   return !!(respone as IFormattedErrorResponse).message
 }
 
-
-export function formatCookie(cookie : string): string {
-  return decodeURIComponent(cookie.split(";")[0].split("=")[1]);
+export function getProperty<T, K extends keyof T>(obj: T, key: K) {
+	return obj[key];
 }
 
+export function formatCookie(cookie : string): string {
+  return decodeURIComponent(cookie);
+}
+export function getCookieByName(name: string): string {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+      return parts.pop()?.split(';').shift() || '';
+  }
+  return '';
+}
 
 /// only use this function in client side
 export function getUserCookie() : string { 

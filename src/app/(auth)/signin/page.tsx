@@ -18,7 +18,6 @@ function SigninPage(props: Props) {
 			// cookie will be accessible by client's JavaScript
 			httpOnly: true,
 			// cookie will be sent only over HTTPS
-			secure: true,
 		});
 		cookies().set({
 			name: "refreshToken",
@@ -28,7 +27,6 @@ function SigninPage(props: Props) {
 			// cookie will be accessible by client's JavaScript
 			httpOnly: true,
 			// cookie will be sent only over HTTPS
-			secure: true,
 		});
 		// to convert this string shit
 		// JSON.parse(decodeURI('cookies').replaceAll("%3A",":").replaceAll("%2C", ","))
