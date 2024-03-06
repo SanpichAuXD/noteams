@@ -1,12 +1,24 @@
-"use client";
-
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import ModalConfirm from "@/components/profilecomponent/savemodal";
+import { cookies } from "next/headers";
+import { cn, formatCookie } from "@/lib/utils";
+import { SignupRequest } from "@/type/user";
+import { GetProfile } from "@/api-caller/user";
+import destr from "destr";
+import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData";
+import { useToast } from "@/components/ui/use-toast";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import ProfileEdit from "@/components/profilecomponent/profileedit";
 
 type Profile1 = {
-  userid: number;
+  user_id: number;
   username: string;
   dob: Date | string;
   bio: string;
@@ -16,142 +28,303 @@ type Profile1 = {
 };
 
 type Team1 = {
-  team_id : string;
-  teamName : string;
+  team_id: string;
+  teamName: string;
   team_poster: string;
-  role : string;
+  role: string;
 };
 
 type Profileandteam = {
-  pData1: Profile1[];
-  pTeam: Team1[];
+  pData1: Profile1;
 };
 
-const EditProfile: React.FC<Profile1> = ({
-  userid, username, dob, bio, phone, avatar, email 
-}) => (
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+function onSubmit() {
+  const formData: TypedFormData<SignupRequest> =
+    getTypedFormData<SignupRequest>();
+}
+type Props = {};
+// const EditProfile = (props: Props, pData1: any) => {
+//   const { toast } = useToast();
+//   const [formStep, setFormStep] = useState(0);
+//   const form = useForm<z.infer<typeof registerSchema>>({
+//     resolver: zodResolver(registerSchema),
+//     defaultValues: {
+//       username: "",
+//       email: "",
+//       password: "",
+//       cfpassword: "",
+//       phone: "",
+//       dob: new Date(),
+//     },
+//   });
 
-  // const openModal = () => setIsModalOpen(true);
-  // const closeModal = () => setIsModalOpen(false);
-  // const handleConfirm = () => {
-  //   // Perform save action here
-  //   console.log('Save action performed');
-  //   closeModal();
-  // };
+//   const ValidateBeforeNext = async () => {
+//     // Trigger validation for the relevant fields
+//     console.log(formStep, "formStep");
+//     if (formStep == 0) {
+//       await form.trigger(["username", "email"]);
+//       const usernameState = form.getFieldState("username");
+//       const emailState = form.getFieldState("email");
+//       if (
+//         usernameState.invalid ||
+//         emailState.invalid ||
+//         !usernameState.isDirty ||
+//         !emailState.isDirty
+//       ) {
+//         return;
+//       }
+//       setFormStep(formStep + 1);
+//     } else if (formStep == 1) {
+//       await form.trigger(["dob", "phone"]);
+//       const dobState = form.getFieldState("dob");
+//       const phoneState = form.getFieldState("phone");
+//       if (
+//         dobState.invalid ||
+//         phoneState.invalid ||
+//         !dobState.isDirty ||
+//         !phoneState.isDirty
+//       ) {
+//         return;
+//       }
+//       setFormStep(formStep + 1);
+//     }
+//   };
+//   async function onSubmit(values: z.infer<typeof registerSchema>) {
+//     // Do something with the form values.
+//     // ✅ This will be type-safe and validated.
+//     const formData: TypedFormData<SignupRequest> =
+//       getTypedFormData<SignupRequest>();
+//     const date = values.dob
+//       .toLocaleDateString("en-US", {
+//         year: "numeric",
+//         month: "2-digit",
+//         day: "2-digit",
+//       })
+//       .split("/");
+//     formData.append("username", values.username);
+//     formData.append("email", values.email);
+//     formData.append("password", values.password);
+//     formData.append("dob", `${date[2]}-${date[0]}-${date[1]}`);
+//     formData.append("phone", values.phone);
+//     const response = await signUp(formData);
+//     if (!isResponseError(response)) {
+//       toast({
+//         title: "Success!",
+//         description: "You have successfully signed up!",
+//         variant: "success",
+//       });
+//     } else {
+//       const { message, status, statusText } = response;
+//       toast({
+//         title: "Error Occured!",
+//         description: message,
+//         variant: "destructive",
+//       });
+//     }
+//   }
+//   return (
+//     <div className="flex flex-col h-full justify-center px-5  gap-4 w-1/2 ">
+//       <p className="text-xl font-bold text-center">Signup</p>
+//       <Form {...form}>
+//         <form
+//           onSubmit={form.handleSubmit(onSubmit)}
+//           className="space-y-2 px-[15%] relative space-x-8
+// 						overflow-x-hidden
+// 						"
+//         >
+//           <div
+//             className={cn(
+//               "space-y-3 transition-transform transform translate-x-0 ease-in-out duration-300 ",
+//               {
+//                 "transform -translate-x-[140%]": formStep !== 0,
+//               }
+//             )}
+//           >
+//             <FormField
+//               control={form.control}
+//               name="username"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Username</FormLabel>
+//                   <FormControl>
+//                     <Input placeholder="Enter your username" {...field} />
+//                   </FormControl>
 
-  <main>
-    {/* <p className="font-bold text-3xl p-3 underline underline-offset-8">
-      EditProfile
-    </p> */}
-    <div className="grid grid-cols-2 gap-4 m-16">
-      <div className=" m-16 ">
-        <div className="justify-center flex ">
-          <img
-            className="h-[18rem] w-[18rem] border-2 rounded-3xl"
-            src={avatar}
-          />
-        </div>
-        <div className="flex justify-center mt-10">
-          <button className="p-5 bg-green-300 hover:bg-green-600 text-1xl">
-            Edit Picture
-          </button>
-        </div>
-      </div>
-      <div className="grid content-center">
-        <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="w-full apx-3 mb-6 ">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-1xl font-bold mb-2"
-              htmlFor="grid-first-name"
-            >
-              Username
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-black rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              id="grid-first-name"
-              type="text"
-              placeholder={username}
-            />
-          </div>
-          <div className="w-full apx-3 mb-6 ">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-1xl font-bold mb-2"
-              htmlFor="grid-first-name"
-            >
-              Date of Birth
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-black rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              id="grid-first-name"
-              type="text"
-              placeholder={dob.toString()}
-            />
-          </div>
-          <div className="w-full apx-3 mb-6 ">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-1xl font-bold mb-2"
-              htmlFor="grid-first-name"
-            >
-              Bios
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-black rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              id="grid-first-name"
-              type="text"
-              placeholder={bio}
-            />
-          </div>
-          <div className="w-full apx-3 mb-6 ">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-1xl font-bold mb-2"
-              htmlFor="grid-first-name"
-            >
-              Phone
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-black rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              id="grid-first-name"
-              type="text"
-              placeholder={phone}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Link href="/profile">
-              <button
-                // onClick={openModal}
-                className="bg-green-300 hover:bg-green-600 p-3"
-              >
-                Save Change
-              </button>
-              {/* <ModalConfirm isOpen={isModalOpen} onClose={closeModal} onConfirm={handleConfirm} /> */}
-            </Link>
-            <Link href="/profile">
-              <button className="bg-red-300 hover:bg-red-600 p-3 ml-5">
-                Cancel
-              </button>
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
-  </main>
-);
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//             <FormField
+//               control={form.control}
+//               name="email"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Email</FormLabel>
+//                   <FormControl>
+//                     <Input placeholder="Enter your email" {...field} />
+//                   </FormControl>
 
-function editprofileApp() {
-  const profile01: Profile1[] = [
-    {
-      userid: 1,
-      username: "Peter1234",
-      dob: "12-12-2002",
-      bio: "bio XD",
-      phone: "0944215180",
-      email: "peter1234@gmail.comm",
-      avatar:
-        "https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png",
-    },
-  ];
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//           </div>
+//           <div
+//             className={cn(
+//               "space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+//               {
+//                 "transform translate-x-full ": formStep !== 1,
+//               },
+//               {
+//                 "transform -translate-x-[140%]": formStep >= 2,
+//               }
+//             )}
+//           >
+//             {/* birthday */}
+//             <FormField
+//               control={form.control}
+//               name="dob"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Year</FormLabel>
+//                 </FormItem>
+//               )}
+//             />
+
+//             <FormField
+//               control={form.control}
+//               name="phone"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Phone</FormLabel>
+//                   <FormControl>
+//                     <Input placeholder="Enter your phone number" {...field} />
+//                   </FormControl>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//           </div>
+//           <div
+//             className={cn(
+//               "space-y-3 mb-5 px-[15%] absolute  top-0 left-0 right-0 transition-transform transform translate-x-0 ease-in-out duration-300 w-auto",
+//               {
+//                 "transform translate-x-full ": formStep !== 2,
+//               },
+//               {
+//                 "transform -translate-x-full": formStep >= 3,
+//               }
+//             )}
+//           >
+//             <FormField
+//               control={form.control}
+//               name="password"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Password</FormLabel>
+//                   <FormControl>
+//                     <PasswordInput
+//                       placeholder="Enter your password"
+//                       {...field}
+//                     />
+//                   </FormControl>
+
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//             <FormField
+//               control={form.control}
+//               name="cfpassword"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Confirm Password</FormLabel>
+//                   <FormControl>
+//                     <PasswordInput
+//                       placeholder="Enter your password"
+//                       {...field}
+//                     />
+//                   </FormControl>
+
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//           </div>
+
+//           <div
+//             className={cn("flex justify-between relative pt-14 ", {
+//               "justify-end": formStep == 0,
+//             })}
+//           >
+//             {/* flex gap-2 relative pt-28 */}
+//             <Button
+//               type="button"
+//               variant={"ghost"}
+//               onClick={() => {
+//                 setFormStep(formStep - 1);
+//               }}
+//               className={cn({
+//                 hidden: formStep == 0,
+//               })}
+//             >
+//               Go Back
+//             </Button>
+//             <Button
+//               type="submit"
+//               className={cn({
+//                 hidden: formStep !== 2,
+//               })}
+//             >
+//               Register
+//             </Button>
+
+//             <Button
+//               type="button"
+//               variant={"outline"}
+//               className={cn("text-end", {
+//                 hidden: formStep == 2,
+//               })}
+//               onClick={() => ValidateBeforeNext()}
+//             >
+//               Next
+//               <ArrowRight className="ml-2 w-4 h-4" />
+//             </Button>
+//           </div>
+//           <p className="text-center pt-5">
+//             Already Have Account ?{" "}
+//             <Link href={"/signin"} className="font-bold">
+//               {" "}
+//               Login
+//             </Link>
+//           </p>
+//         </form>
+//       </Form>
+//     </div>
+//   );
+// };
+
+async function editprofileApp() {
+  const token = cookies().get("accessToken")?.value!;
+  const users = cookies().get("user")?.value!;
+
+  const cookie = formatCookie(users);
+  const { user_id } = destr<SignupRequest>(cookie);
+  // const { user_iw } = destr<SignupRequest>(cookie);
+
+  const data = await GetProfile(token, user_id);
+  // const profile01: Profile1[] = [
+  //   {
+  //     userid: 1,
+  //     username: "Peter1234",
+  //     dob: "12-12-2002",
+  //     bio: "bio XD",
+  //     phone: "0944215180",
+  //     email: "peter1234@gmail.comm",
+  //     avatar:
+  //       "https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png",
+  //   },
+  // ];
 
   const teamprofile01: Team1[] = [
     {
@@ -172,9 +345,8 @@ function editprofileApp() {
 
   return (
     <div>
-        {profile01.map((prof) => (
-        <EditProfile key={prof.userid} {...prof} />
-      ))}
+      {/* <EditProfile pData1={data.data} /> */}
+      <ProfileEdit {...data.data} token={token}  />
     </div>
   );
 }
