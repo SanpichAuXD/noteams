@@ -67,7 +67,7 @@ export function MemberTable<TData, TValue>({
         },
         onSuccess : () => {
             console.log('success')
-            queryClient.invalidateQueries({queryKey : ['hydrate-team']})
+            queryClient.invalidateQueries({queryKey : [`member-${team_id}`]})
         },
 		onError : (error) => {
 			console.log(error)
