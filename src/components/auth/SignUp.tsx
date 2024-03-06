@@ -95,22 +95,18 @@ const SignUp = (props: Props) => {
 		formData.append("password", values.password);
 		formData.append("dob", `${date[2]}-${date[0]}-${date[1]}`);
 		formData.append("phone", values.phone);
-		const response = await signUp(formData);
-		if (!isResponseError(response)) {
-			toast({
-				title: "Success!",
-				description: "You have successfully signed up!",
-				variant: "success",
-			});
-			router.push("/signin");
-		} else {
-			const { message, status, statusText } = response;
-			toast({
-				title: "Error Occured!",
-				description: message,
-				variant: "destructive",
-			});
-		}
+		try{
+      const response = await signUp(formData);
+      toast({
+        title:"Signup Successfull",
+        variant : "success"
+      })
+    }catch(e){
+      if(isResponseError(e)){
+        toast({title : e.message, variant : "destructive"})
+      }
+    }
+		
 	}
 	return (
 		<div className="flex flex-col h-full justify-center px-5  gap-4 w-1/2 ">
