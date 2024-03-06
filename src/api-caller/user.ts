@@ -99,19 +99,7 @@ export async function refreshToken(
     return formattedError(error);
   }
 }
-export async function GetProfile(token: string, user_id: string) {
-  // const cookie = formatCookie(document.cookie.split(";")[0].split("=")[1]);
-  // console.log(cookie);
-  // const { user_id } = destr<SignupRequest>(cookie);
-  console.log(user_id, "ID");
-  const data = await getInstance().get(`/users/profile/${user_id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  console.log(data, "fpr");
-  return data;
-}
+
 
 export async function GetTeam(token: string, user_id: string) {
   console.log(user_id, "ID");
