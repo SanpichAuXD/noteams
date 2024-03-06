@@ -3,7 +3,7 @@ version: "3.8"
 services:
   next-app:
     container_name: noteams-frontend  
-    image: sanpichxd/noteams-frontend:latest
+    image: fixfireza/noteams-frontend:latest
     build:
       context: .
       dockerfile: Dockerfile
