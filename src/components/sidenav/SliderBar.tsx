@@ -19,15 +19,15 @@ type SidenavProps = {
 export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	// Define state for sidebar expansion
 	const [sidebarExpanded, setSidebarExpanded] = useState(false);
-	const [cookie, setCookie] = useState('')
+	// const [cookie, setCookie] = useState('')
 	const router = useRouter();
 	// const cookie = formatCookie(document.cookie)
-    const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
+    // const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
 	// Create a reference to the sidebar element
 	const sidebar = useRef(null);
 	// Effect to add or remove a class to the body element based on sidebar expansion
 	useEffect(() => {
-		setCookie(formatCookie(document.cookie))
+		// setCookie(formatCookie(document.cookie))
 		if (sidebarExpanded) {
 			document.querySelector("body")?.classList.add("sidebar-expanded");
 		} else {
@@ -131,11 +131,14 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 						method : 'POST',
 										
 					})
-					if (response.ok) {
-						router.push('/signin')
+					const data = await response.json();
+					console.log(data, 'data')
+					if (data.status === 200) {
+						console.log("signout successfull!");
+						router.refresh();
 					}
 					else{
-						alert("something explode in code")
+						alert(response)
 					}
 			  }}
             />
@@ -154,7 +157,9 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 							<div className="inline-block ">
 
 							
-							<p className="text-sm"><User className="inline-block" size={40} /> {!sidebarExpanded && `${username} `}</p>
+							<p className="text-sm"><User className="inline-block" size={40} /> 
+							{/* {!sidebarExpanded && `${username} `} */}
+							</p>
 							</div>
 						<button
 							onClick={() => setSidebarExpanded(!sidebarExpanded)}

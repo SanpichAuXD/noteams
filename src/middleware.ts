@@ -5,6 +5,7 @@ import { jwtVerify } from "jose";
 import { refreshToken, signOut } from "./api-caller/user";
 import { cookies } from "next/headers";
 import { isResponseError } from "./lib/utils";
+import { decodeJwtToken } from "./lib/MyJwtVerify";
 const jwtSecret = new TextEncoder().encode(
 	process.env.NEXT_PUBLIC_JWT_SECRET_KEY
 );
@@ -13,15 +14,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 	const access = request.cookies.get("accessToken");
 	const refresh = request.cookies.get("refreshToken");
 	const noauthpath = ["/signup", "/signin"];
-
 	if (refresh) {
+		
 		if (access) {
-			try {
-				const { payload } = await jwtVerify(access.value, jwtSecret);
-				const expire = payload.exp;
+				const decodedPayload = decodeJwtToken(access.value);
+				const expire = decodedPayload?.exp;
 				// will ask for refresh token before 1 hour of expire
 				if (expire && expire < (Date.now() + 180000) / 1000) {
-					console.log("now");
 					const data = await refreshToken(
 						access.value,
 						refresh.value
@@ -44,7 +43,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 							name: "refreshToken",
 							value: data.token.refresh_token,
 							// keep the cookie for a days
-							maxAge: 60 * 60 * 7,
+							maxAge: 60 * 60 *24* 7,
 							// cookie will be accessible by client's JavaScript
 							httpOnly: true,
 							// cookie will be sent only over HTTPS
@@ -68,27 +67,32 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
 						return response;
 					}
-				}
-
-				// return NextResponse.next();
-			} catch (error: any) {
-				if (error.name === "JWTExpired") console.log("xd");
+		// 		if (noauthpath.includes(request.nextUrl.pathname)) {
+		// 			console.log("middleware go to teams");
+		// 			return NextResponse.redirect(new URL("/teams", request.nextUrl));
 				
-				const response = NextResponse.redirect(
-					new URL("/signin", request.url)
-				);
-				response.cookies.delete("accessToken");
-				response.cookies.delete("refreshToken");
-				response.cookies.delete("user");
-				response.cookies.delete("tokenId");
-				return response;
+
+		// 		// return NextResponse.next();
+			
+		// 		console.log(error);
+		// 	}
+		// 		// if (error.name === "JWTExpired") console.log("xd");
+				
+		// 		// const response = NextResponse.redirect(
+		// 		// 	new URL("/signin", request.url)
+		// 		// );
+		// 		// response.cookies.delete("accessToken");
+		// 		// response.cookies.delete("refreshToken");
+		// 		// response.cookies.delete("user");
+		// 		// response.cookies.delete("tokenId");
+		// 		// return response;
 			}
-		}
-		else if (!access){
-			const response = NextResponse.redirect(new URL("/signin", request.url));
-			response.cookies.delete("refreshToken");
-			console.log('should redirect')
-			return response;
+		
+		// else if (!access){
+		// 	console.log('should redirect')
+		// 	const response = NextResponse.redirect(new URL("/signin", request.url));
+		// 	response.cookies.delete("refreshToken");
+		// 	return response;
 		}
 		// if (noauthpath.includes(request.nextUrl.pathname)) {
 		// 	console.log("middleware go to teams");
@@ -108,16 +112,14 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 		// }
 	}
 
-	// 	console.log(access);
-	// 	//   console.log(auth, noauthpath.includes(request.nextUrl.pathname), auth && noauthpath.includes(request.nextUrl.pathname));
-	// if (!access && !noauthpath.includes(request.nextUrl.pathname)) {
-	// 	// console.log("middleware go to signin");
-	// 	return NextResponse.redirect(new URL("/signin", request.nextUrl));
-	// }
-	// if(access && noauthpath.includes(request.nextUrl.pathname)){
-	// 	return NextResponse.redirect(new URL("/teams", request.nextUrl));
-	// }
-	// console.log("middleware end ");
+	if (!access && !noauthpath.includes(request.nextUrl.pathname)) {
+		// console.log("middleware go to signin");
+		return NextResponse.redirect(new URL("/signin", request.nextUrl));
+	}
+	if(access && noauthpath.includes(request.nextUrl.pathname)){
+		return NextResponse.redirect(new URL("/teams", request.nextUrl));
+	}
+	console.log("middleware end ");
 	return NextResponse.next();
 }
 

@@ -41,3 +41,15 @@ email: string
 role : 'OWNER' | 'MEMBER'
 user_id: string
 }
+
+export type JwtPayload = {
+    claims: {
+        id: string;
+    };
+    iss: string;
+    sub: string;
+    aud: string[];
+    exp: number;
+    nbf: number;
+    iat: number;
+};
