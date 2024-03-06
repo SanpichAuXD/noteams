@@ -41,13 +41,20 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "../ui/input";
 import { Calendar } from "../ui/calendar";
-import { useTaskStore } from "@/store/TaskStore";
 import { Task } from "./TaskCard";
 import { Textarea } from "../ui/textarea";
+import { TaskSchema } from "@/validator/task"
+import { useMutation , useQuery, useQueryClient} from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { IFormattedErrorResponse } from "@/type/type";
+import { deleteTask, updateTask } from "@/api-caller/task"
+import { TeamRequest } from "@/type/team";
+import { getmemberByTeamId } from "@/api-caller/team";
+import { MemberUser } from "@/type/user";
 const status = [
-	{ label: "Todo", value: "todo" },
-	{ label: "In Progress", value: "in-progress" },
-	{ label: "Done", value: "done" },
+	{ label: "Todo", value: "TODO" },
+	{ label: "In Progress", value: "DOING" },
+	{ label: "Done", value: "DONE" },
 ] as const;
 // label email or username and value is id
 const member = [
@@ -60,57 +67,66 @@ const member = [
 	{ label: "test@gma6il.com", value: "U000145" },
 ] as const;
 
-const FormSchema = z.object({
-	status: z
-		.string({
-			required_error: "Please select a language.",
-		})
-		.min(1),
-	title: z
-		.string({
-			required_error: "Please enter a title.",
-		})
-		.min(3),
-	description: z
-		.string({
-			required_error: "Please enter a description.",
-		})
-		.min(3),
-	assignee: z.string({
-		required_error: "Please enter a assignee.",
-	}),
-	dueDate: z.date({
-		required_error: "Please enter a due date.",
-	}),
-});
+
 type KanbanformProps = {
 	task: Task;
+	
 };
-export function TaskDetail(task: Task) {
-	const form = useForm<z.infer<typeof FormSchema>>({
-		resolver: zodResolver(FormSchema),
-		defaultValues: {
-			status: task.columnId,
-			title: task.title,
-			description: task.description,
-			assignee: task.assignee,
-			dueDate: new Date(task.duedate),
+export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest) {
+	const { data: members } = useQuery<MemberUser[]>({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
 		},
 	});
-	const { updateTask, deleteTask } = useTaskStore();
-	function onSubmit(data: z.infer<typeof FormSchema>) {
+	const form = useForm<z.infer<typeof TaskSchema>>({
+		resolver: zodResolver(TaskSchema),
+		defaultValues: {
+			status: task.task_status,
+			title: task.task_name,
+			description: task.task_desc || "",
+			assignee: task.user_id || "",
+			dueDate: task.task_deadline ? new Date(task.task_deadline) : undefined,
+		},
+	});
+	const queryClient = useQueryClient()
+	const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,FormData>({
+		mutationFn : async (formData) => {
+		  const {data} = await updateTask({token,team_id,task_id : task.task_id as string,formData});
+		  return data;
+	  },
+	  onSuccess : () => {
+		console.log('success')
+		queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
+	},
+	onError : (error) => {
+	console.log(error.response?.data.message)
+	}
+	  })
+
+	function onSubmit(data: z.infer<typeof TaskSchema>) {
 		console.log(data);
-		if (form.formState.isDirty) {
-			const task_id = task.id;
+		const formData = new FormData();
+		console.log(form.getFieldState("status").isDirty)
+		const date = data?.dueDate?.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
+		// if (form.getFieldState("title").isDirty || form.getFieldState("status").isDirty || form.getFieldState("description").isDirty || form.getFieldState("assignee").isDirty || form.getFieldState("dueDate").isDirty ){
+			const task_id = task.task_id;
 			const taskdata: Task = {
-				id: task_id,
-				title: data.title,
-				description: data.description,
-				columnId: data.status as "todo" | "in-progress" | "done",
-				assignee: data.assignee,
-				duedate: data.dueDate.toDateString(),
+				task_id: task_id,
+				task_name: data.title,
+				task_desc: data.description,
+				task_status: data.status as "TODO" | "DOING" | "DONE",
+				user_id: data.assignee || "",
+				task_deadline: data.dueDate !== undefined && date ?  `${date[2]}-${date[0]}-${date[1]}` : "",
 			};
-			updateTask(taskdata);
+			formData.append("task_id", task_id as string);
+			formData.append("task_name", data.title);
+			formData.append("task_desc", data.description || "");
+			formData.append("task_status", data.status);
+			formData.append("user_id", data.assignee || "");
+			formData.append("task_deadline", data.dueDate !== undefined && date ?  `${date[2]}-${date[0]}-${date[1]}` : "");
+			mutation.mutate(formData)
+			// updateTask(taskdata);
 			toast({
 				title: "You submitted the following values:",
 				description: (
@@ -121,13 +137,13 @@ export function TaskDetail(task: Task) {
 					</pre>
 				),
 			});
-		}
-    else if(!form.formState.isDirty){
-      toast({
-        title: "No changes made",
-        description: "Please make some changes to update the task",
-      });
-    }
+		// }
+    // else if(!form.formState.isDirty){
+    //   toast({
+    //     title: "No changes made",
+    //     description: "Please make some changes to update the task",
+    //   });
+    // }
   }
 	return (
 		<Form {...form}>
@@ -140,7 +156,7 @@ export function TaskDetail(task: Task) {
 					name="title"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Title{task.assignee}</FormLabel>
+							<FormLabel>Title{task.user_id}</FormLabel>
 							<FormControl>
 								<Input
 									{...field}
@@ -253,7 +269,7 @@ export function TaskDetail(task: Task) {
 													"text-muted-foreground"
 											)}
 										>
-											{field.value ? (
+											{field.value != undefined ? (
 												format(field.value, "PPP")
 											) : (
 												<span>Pick a date</span>
@@ -301,11 +317,11 @@ export function TaskDetail(task: Task) {
 											)}
 										>
 											{field.value
-												? member.find(
+												? members!.find(
 														(member) =>
-															member.value ===
+															member.user_id ===
 															field.value
-												  )?.label
+												  )?.username
 												: "Select status..."}
 											<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 										</Button>
@@ -318,27 +334,27 @@ export function TaskDetail(task: Task) {
 											No status found.
 										</CommandEmpty>
 										<CommandGroup>
-											{member.map((state) => (
+											{members!.map((state) => (
 												<CommandItem
-													value={state.label}
-													key={state.value}
+													value={state.user_id}
+													key={state.member_id}
 													onSelect={() => {
 														form.setValue(
 															"assignee",
-															state.value
+															state.user_id
 														);
 													}}
 												>
 													<Check
 														className={cn(
 															"mr-2 h-4 w-4",
-															state.value ===
+															state.user_id ===
 																field.value
 																? "opacity-100"
 																: "opacity-0"
 														)}
 													/>
-													{state.label}
+													{state.username}
 												</CommandItem>
 											))}
 										</CommandGroup>
@@ -357,11 +373,16 @@ export function TaskDetail(task: Task) {
 						<Button variant={"destructive"}>Delete</Button>
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-md">
-						<p>Are you sure you want to delete task {task.title}</p>
+						<p>Are you sure you want to delete task {task.task_name}</p>
 						<DialogFooter>
 							<Button
 								variant="destructive"
-								onClick={() => deleteTask(task.id as string)}
+								onClick={()=>{
+									deleteTask({token,team_id,task_id : task.task_id as string})
+									queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
+								
+								}}
+								// onClick={() => deleteTask(task.task_id as string)}
 							>
 								Delete
 							</Button>

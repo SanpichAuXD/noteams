@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import {
 	Accordion,
@@ -23,10 +22,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cookies } from "next/headers";
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
+import { getTeamSetting } from "@/api-caller/team";
+import Settings from "@/components/setting/Settings";
+import SettingPermission from "@/components/setting/SettingPermission";
+import { CodeInputForm } from "@/components/setting/EditCode";
+import WithAuth from "@/components/ui/WithAuth";
 type Props = {};
 
-const SettingPage = (props: Props) => {
-	const { name, description, image } = useTeamContext();
+const SettingPage = async({ params }: { params: { teamId: string } }) => {
+	const token = cookies().get("accessToken")?.value!;
+	const data = await getTeamSetting(token, params.teamId);
+	
 	return (
 		<div className="w-[90%] p-20">
 			<p className="text-2xl font-bold">Setting Page</p>
@@ -34,75 +42,36 @@ const SettingPage = (props: Props) => {
 				<AccordionItem value="item-1">
 					<AccordionTrigger>Team Detail</AccordionTrigger>
 					<AccordionContent>
-						<div className="flex flex-row justify-center py-5">
-							<SettingImage image={image} />
-							<div className="flex w-1/2">
-								<SettingForm />
-							</div>
-						</div>
+						<Settings token={token} team_id={params.teamId} team={data} />
 					</AccordionContent>
 				</AccordionItem>
 
 				<AccordionItem value="item-2">
 					<AccordionTrigger>Member Permission</AccordionTrigger>
 					<AccordionContent className="px-[10%] space-y-6 pt-5">
-						<div className="flex items-center justify-between space-x-2">
-							<label
-								htmlFor="terms"
-								className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>
-								Allow Member to manage Task
-							</label>
-							<Checkbox id="terms" />
-						</div>
-						<div className="flex items-center justify-between space-x-2">
-							<label
-								htmlFor="terms"
-								className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>
-								Allow member to manage file
-							</label>
-							<Checkbox id="terms" />
-						</div>
-						<div className="flex items-center justify-between space-x-2">
-							<label
-								htmlFor="terms"
-								className="text-lg font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							>
-								Allow member to invite
-							</label>
-							<Checkbox id="terms" />
-						</div>
+						<SettingPermission 
+						allow={
+							{
+								allow_file : data.allow_file, 
+								allow_invite : data.allow_invite, 
+								allow_task : data.allow_task}
+							}
+						token={token}
+						team_id={params.teamId}
+							/>
 					</AccordionContent>
 				</AccordionItem>
 				<AccordionItem value="item-3">
 					<AccordionTrigger>Code Team</AccordionTrigger>
 					<AccordionContent className="px-[10%] flex items-center gap-4">
-						<p className="text-lg">Code Team : XDXDXDXD</p>
+						<p className="text-lg">Code Team : {data.team_code}</p>
 						<Dialog>
 							<DialogTrigger asChild>
 									<Edit size={25} className="cursor-pointer" />
 							</DialogTrigger>
 							<DialogContent className="sm:max-w-[425px]">
 								<DialogTitle>Edit Code Team</DialogTitle>
-								<div className="grid gap-4 py-4">
-									<div className="grid grid-cols-4 items-center gap-4">
-										<Label
-											htmlFor="name"
-											className="text-right"
-										>
-											Code Team
-										</Label>
-										<Input
-											id="name"
-											defaultValue="Pedro Duarte"
-											className="col-span-3"
-										/>
-									</div>
-								</div>
-								<DialogFooter>
-									<Button type="submit">Save changes</Button>
-								</DialogFooter>
+								<CodeInputForm code={data.team_code} token={token} team_id={params.teamId} />
 							</DialogContent>
 						</Dialog>
 					</AccordionContent>
@@ -112,4 +81,4 @@ const SettingPage = (props: Props) => {
 	);
 };
 
-export default SettingPage;
+export default WithAuth(SettingPage);

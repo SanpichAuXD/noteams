@@ -24,6 +24,9 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
 import { Kanbanform } from './Kanbanform';
+import { MemberUser } from "@/type/user";
+import { useQuery } from "@tanstack/react-query";
+import { getmemberByTeamId } from "@/api-caller/team";
 
 export interface Column {
 	id: UniqueIdentifier;
@@ -41,19 +44,22 @@ interface BoardColumnProps {
 	column: Column;
 	tasks: Task[];
 	isOverlay?: boolean;
-	addTask: (task: Task) => void;
+	member  : MemberUser[];
+	token: string;
+	team_id : string;
 }
 
 export function BoardColumn({
 	column,
 	tasks,
 	isOverlay,
-	addTask,
+	member,
+	token,
+	team_id
 }: BoardColumnProps) {
 	const tasksIds = useMemo(() => {
-		return tasks.map((task) => task.id);
+		return tasks.map((task) => task.task_id);
 	}, [tasks]);
-
 	const {
 		setNodeRef,
 		attributes,
@@ -70,6 +76,13 @@ export function BoardColumn({
 		attributes: {
 			roleDescription: `Column: ${column.title}`,
 		},
+	});
+	const { data: members } = useQuery<MemberUser[]>({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
+		},
+		initialData: member,
 	});
 
 	const style = {
@@ -118,7 +131,7 @@ export function BoardColumn({
 				<CardContent className="flex flex-grow flex-col gap-2 p-2">
 					<SortableContext items={tasksIds}>
 						{tasks.map((task) => (
-							<TaskCard key={task.id} task={task} />
+							<TaskCard key={task.task_id} task={task} team_id={team_id} token={token} />
 						))}
 					</SortableContext>
 				</CardContent>
@@ -132,7 +145,7 @@ export function BoardColumn({
 					<SheetContent className="w-[500px] md:max-w-[500px]" side={"right"}>
 						<SheetHeader>
 							<SheetTitle>Add Task</SheetTitle>
-							<Kanbanform  />
+							<Kanbanform column={column.id as string} token={token} team_id={team_id} />
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>

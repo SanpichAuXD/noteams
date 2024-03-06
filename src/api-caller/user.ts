@@ -32,13 +32,23 @@ export async function signIn(
   }
 }
 
-export async function signOut(): Promise<string | IFormattedErrorResponse> {
-  try {
-    const { data } = await getInstance().post("/users/signout");
-    return data;
-  } catch (error) {
-    return formattedError(error);
-  }
+
+export async function signOut(token:string , oauth_id : string): Promise<string | IFormattedErrorResponse> {
+	const formData = new FormData();
+	formData.append("oauth_id", oauth_id);
+	try {
+		const { data } = await getInstance().post("/users/signout",
+		{
+			headers:{
+				"Authorization": `Bearer ${token}`
+			},
+			body : formData
+		}
+		);
+		return data;
+	} catch (error) {
+		return formattedError(error);
+	}
 }
 
 export async function getUser(
@@ -145,3 +155,16 @@ export async function UpdateProfile(
     throw formattedError(error);
   }
 }
+
+export async function GetProfile(token: string, user_id : string) {
+    console.log(user_id, "ID");
+    const data = await getInstance().get(`/users/profile/${user_id}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(data, "fpr");
+    return data;
+  }

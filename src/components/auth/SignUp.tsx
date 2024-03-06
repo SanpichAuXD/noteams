@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { redirect, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -50,77 +51,74 @@ const SignUp = (props: Props) => {
     },
   });
 
-  const ValidateBeforeNext = async () => {
-    // Trigger validation for the relevant fields
-    console.log(formStep, "formStep");
-    if (formStep == 0) {
-      await form.trigger(["username", "email"]);
-      const usernameState = form.getFieldState("username");
-      const emailState = form.getFieldState("email");
-      if (
-        usernameState.invalid ||
-        emailState.invalid ||
-        !usernameState.isDirty ||
-        !emailState.isDirty
-      ) {
-        return;
-      }
-      setFormStep(formStep + 1);
-    } else if (formStep == 1) {
-      await form.trigger(["dob", "phone"]);
-      const dobState = form.getFieldState("dob");
-      const phoneState = form.getFieldState("phone");
-      if (
-        dobState.invalid ||
-        phoneState.invalid ||
-        !dobState.isDirty ||
-        !phoneState.isDirty
-      ) {
-        return;
-      }
-      setFormStep(formStep + 1);
-    }
-  };
-  async function onSubmit(values: z.infer<typeof registerSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    const formData: TypedFormData<SignupRequest> =
-      getTypedFormData<SignupRequest>();
-    const date = values.dob
-      .toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .split("/");
-    formData.append("username", values.username);
-    formData.append("email", values.email);
-    formData.append("password", values.password);
-    formData.append("dob", `${date[2]}-${date[0]}-${date[1]}`);
-    formData.append("phone", values.phone);
-    const response = await signUp(formData);
-    if (!isResponseError(response)) {
-      toast({
-        title: "Success!",
-        description: "You have successfully signed up!",
-        variant: "success",
-      });
-    } else {
-      const { message, status, statusText } = response;
-      toast({
-        title: "Error Occured!",
-        description: message,
-        variant: "destructive",
-      });
-    }
-  }
-  return (
-    <div className="flex flex-col h-full justify-center px-5  gap-4 w-1/2 ">
-      <p className="text-xl font-bold text-center">Signup</p>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-2 px-[15%] relative space-x-8
+
+	const ValidateBeforeNext = async () => {
+		// Trigger validation for the relevant fields
+		console.log(formStep, "formStep");
+		if (formStep == 0) {
+			await form.trigger(["username", "email"]);
+			const usernameState = form.getFieldState("username");
+			const emailState = form.getFieldState("email");
+			if (
+				usernameState.invalid ||
+				emailState.invalid ||
+				!usernameState.isDirty ||
+				!emailState.isDirty
+			) {
+				return;
+			}
+			setFormStep(formStep + 1);
+		} else if (formStep == 1) {
+			await form.trigger(["dob", "phone"]);
+			const dobState = form.getFieldState("dob");
+			const phoneState = form.getFieldState("phone");
+			if (
+				dobState.invalid ||
+				phoneState.invalid ||
+				!dobState.isDirty ||
+				!phoneState.isDirty
+			) {
+				return;
+			}
+			setFormStep(formStep + 1);
+		}
+	};
+	const router = useRouter();
+	async function onSubmit(values: z.infer<typeof registerSchema>) {
+		// Do something with the form values.
+		// ✅ This will be type-safe and validated.
+		const formData: TypedFormData<SignupRequest> =
+			getTypedFormData<SignupRequest>();
+		const date = values.dob.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
+		formData.append("username", values.username);
+		formData.append("email", values.email);
+		formData.append("password", values.password);
+		formData.append("dob", `${date[2]}-${date[0]}-${date[1]}`);
+		formData.append("phone", values.phone);
+		const response = await signUp(formData);
+		if (!isResponseError(response)) {
+			toast({
+				title: "Success!",
+				description: "You have successfully signed up!",
+				variant: "success",
+			});
+			router.push("/signin");
+		} else {
+			const { message, status, statusText } = response;
+			toast({
+				title: "Error Occured!",
+				description: message,
+				variant: "destructive",
+			});
+		}
+	}
+	return (
+		<div className="flex flex-col h-full justify-center px-5  gap-4 w-1/2 ">
+			<p className="text-xl font-bold text-center">Signup</p>
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="space-y-2 px-[15%] relative space-x-8
 						overflow-x-hidden
 						"
         >

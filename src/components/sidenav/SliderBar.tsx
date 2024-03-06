@@ -5,8 +5,11 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Users, KanbanSquare,LogOut} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatCookie } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { error } from "console";
+import destr from "destr";
+import { SignupRequest } from "@/type/user";
 
 // Define the Sidenav component
 type SidenavProps = {
@@ -16,13 +19,15 @@ type SidenavProps = {
 export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	// Define state for sidebar expansion
 	const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
+	const [cookie, setCookie] = useState('')
 	const router = useRouter();
-
+	// const cookie = formatCookie(document.cookie)
+    const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
 	// Create a reference to the sidebar element
 	const sidebar = useRef(null);
 	// Effect to add or remove a class to the body element based on sidebar expansion
 	useEffect(() => {
+		setCookie(formatCookie(document.cookie))
 		if (sidebarExpanded) {
 			document.querySelector("body")?.classList.add("sidebar-expanded");
 		} else {
@@ -37,7 +42,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 			{/* Sidebar backdrop (visible on mobile only) */}
 			<div
 				onClick={() => setSidebarOpen(!sidebarOpen)}
-				className={`fixed inset-0 border-r border-red-700 md:translate-x-0  bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200 ${
+				className={`fixed inset-0 border-r  xs:translate-x-0    bg-opacity-30 z-40 lg:hidden lg:z-auto transition-opacity duration-200 ${
 					sidebarOpen ? "opacity-100" : " pointer-events-none"
 				}`}
 				aria-hidden="true"
@@ -47,7 +52,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 			<div
 				id="sidebar"
 				ref={sidebar}
-				className={`fixed flex flex-col md:-translate-x-72  z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0 sm:translate-x-0  h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar lg:w-64  w-72 bg-white lg:sidebar-expanded:w-20 shrink-0 border-r border-gray-200  p-4 transition-all duration-200 ${
+				className={`fixed flex flex-col md:none  z-40 left-0 top-0 lg:static lg:left-auto lg:top-auto lg:translate-x-0   h-screen overflow-y-scroll lg:overflow-y-auto no-scrollbar lg:w-64  w-72 bg-white lg:sidebar-expanded:w-20 shrink-0 border-r border-gray-200  p-4 transition-all duration-200 ${
 					sidebarOpen ? "translate-x-0" : "-translate-x-72"
 				}`}
 			>
@@ -102,13 +107,6 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
               sidebarExpanded={sidebarExpanded}
             />
             <NavItem
-              href="/kanban"
-              icon={<KanbanSquare size={40} />}
-              label="Kanban Board"
-            // //   setSidebarOpen={setSidebarOpen}
-              sidebarExpanded={sidebarExpanded}
-            />
-            <NavItem
               href="/calendar"
               icon={<Calendar size={40} />}
               label="Calendar"
@@ -122,6 +120,25 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
             // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
             />
+			<NavItem
+              href="/signin"
+              icon={<LogOut size={40} />}
+              label="Signout"
+            // //   setSidebarOpen={setSidebarOpen}
+              sidebarExpanded={sidebarExpanded}
+			  callApi={async()=> {
+					const response = await fetch('api/signout',{
+						method : 'POST',
+										
+					})
+					if (response.ok) {
+						router.push('/signin')
+					}
+					else{
+						alert("something explode in code")
+					}
+			  }}
+            />
           </ul>
         </div>
 
@@ -134,10 +151,10 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 					<div className="flex-1" />
 					<div className="px-3 py-2 w-full text-center  space-y-5">
 						<div className={`flex ${sidebarExpanded ? "flex-col items-center space-y-4" : "flex-row justify-between"}`}>
-							<div className="inline-block">
+							<div className="inline-block ">
 
 							
-							<p><User className="inline-block" size={40} /> {!sidebarExpanded && ": XD"}</p>
+							<p className="text-sm"><User className="inline-block" size={40} /> {!sidebarExpanded && `${username} `}</p>
 							</div>
 						<button
 							onClick={() => setSidebarExpanded(!sidebarExpanded)}
@@ -173,7 +190,7 @@ type NavItemProps = {
 	icon: React.ReactNode;
 	label: string;
 	sidebarExpanded: boolean;
-  callApi? : any;
+  	callApi? : any;
 };
 
 const NavItem = ({

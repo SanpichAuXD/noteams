@@ -7,6 +7,15 @@ import MobileHeader from "@/components/sidenav/MobileHeader";
 import Header from "@/components/sidenav/Header";
 import { cookies } from "next/headers";
 import { User } from "@/type/user";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
+import { FoldVertical, Menu } from "lucide-react";
 
 // Define the RootLayout component
 export default function SiteLayout({
@@ -16,37 +25,34 @@ export default function SiteLayout({
 }) {
 	const user = cookies().get("user")?.value;
 
-	// State to track whether the sidebar is open or closed
-	// const [sidebarOpen, setSidebarOpen] = useState(false);
-
-	// State to track if the viewport is in mobile mode
-	// const [isMobile, setIsMobile] = useState(false);
-
-	// Effect to handle resizing and update isMobile state accordingly
-	// useEffect(() => {
-	//   const handleResize = () => setIsMobile(window.innerWidth < 1024);
-
-	//   // Initial resize check and event listener setup
-	//   handleResize();
-	//   window.addEventListener("resize", handleResize);
-
-	//   // Cleanup: remove event listener on unmount
-	//   return () => window.removeEventListener("resize", handleResize);
-	// }, []);
-
 	return (
 		<div className="flex h-screen ">
-			<Header user={destr<User>(user)} />
+			<div>
+				<Header user={destr<User>(user)} />
+			</div>
+
 			<div className="relative flex flex-col flex-1 lg:overflow-y-auto lg:overflow-x-hidden">
-				{/* Render the Header component if in mobile mode */}
-				{/* {isMobile && (
-              <MobileHeader
-                setSidebarOpen={setSidebarOpen}
-                className="sticky top-0 bg-white border-b border-slate-200 z-30"
-              />
-            )} */}
 				{/* Render the main content */}
 				<main>
+					{/* if i have time but no for sure */}
+					{/* <Sheet>
+						<SheetTrigger className="lg:hidden bg-red-900">
+							Open
+						</SheetTrigger>
+						<SheetContent>
+							<SheetHeader>
+								<SheetTitle>
+									Are you absolutely sure?
+								</SheetTitle>
+								<SheetDescription>
+									This action cannot be undone. This will
+									permanently delete your account and remove
+									your data from our servers.
+								</SheetDescription>
+							</SheetHeader>
+						</SheetContent>
+					</Sheet> */}
+
 					{children}
 				</main>
 			</div>

@@ -1,37 +1,30 @@
 import { DataTable } from '@/components/file/data-table'
-import { User } from '@/type/user'
+import { MemberUser, User } from '@/type/user'
 import React from 'react'
 import { columns } from './column'
+import { cookies } from 'next/headers'
+import { getmemberByTeamId } from '@/api-caller/team'
+import { HydrationBoundary, QueryClient, dehydrate, useQueryClient } from "@tanstack/react-query";
+import { MemberTable } from './data-table'
+import WithAuth from '@/components/ui/WithAuth'
 
 type Props = {}
-type MemberUser = User & {role : 'owner' | 'member'}
-const File  = ({ params }: { params: { teamId: string } }) => {
-  const user : MemberUser[] = [
-    {
-      id: '1',
-      username: 'John Doe',
-      email: 'asasasasas',
-      role: 'owner'
-    },
-    {
-      id: '2',
-      username: 'Jane Doe',
-      email: 'asasasasas',
-      role : 'member'
-    },
-    {
-      id: '3',
-      username: 'John Doe',
-      email: 'asasasasas',
-      role : 'member'
-    }
-  ]
+const File  = async({ params }: { params: { teamId: string } }) => {
+  const token = cookies().get("accessToken")?.value!;
+	
+	
+		const member = await getmemberByTeamId(token, params.teamId)
+ 
   return (
     <div className="min-h-[90vh] p-10  flex flex-col items-center">
       <p className="text-xl font-bold">Member</p>
-      <DataTable data={user} columns={columns}/>
+      <MemberTable 
+      token={token} 
+      team_id={params.teamId}
+       columns={columns} data={member} 
+       />
       </div>
   )
 }
 
-export default File
+export default WithAuth(File)

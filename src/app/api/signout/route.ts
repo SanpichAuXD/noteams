@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest){
+export async function GET(req: NextRequest){
     const tokenId = cookies().get('tokenId');
     const formData = new FormData();
     if(!tokenId?.value) return NextResponse.error();

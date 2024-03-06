@@ -16,30 +16,21 @@ import {
 	Table,
 	TableBody,
 	TableCell,
+	TableFooter,
 	TableHead,
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
 import React from "react";
-import { Button } from "../ui/button";
-import { MoreHorizontal, Upload } from "lucide-react";
-import FileUploadButton from "./UploadButton";
-import UploadButton from "./UploadButton";
-import { columns } from "./../../app/(site)/teams/[teamId]/member/column";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { GetTeamType, TeamFile } from "@/type/team";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Upload, X } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { GetTeamType } from "@/type/team";
+import { deleteMember, getmemberByTeamId } from "@/api-caller/team";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosError } from "axios";
 import { IFormattedErrorResponse } from "@/type/type";
-import { deleteFile } from "@/api-caller/file";
-import { useToast } from "../ui/use-toast";
-import Link from "next/link"
+import { MemberUser } from "@/type/user";
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
@@ -47,36 +38,45 @@ interface DataTableProps<TData, TValue> {
 	team_id: string;
 }
 
-export function DataTable<TData, TValue>({
+export function MemberTable<TData, TValue>({
 	columns,
 	data,
 	token,
 	team_id,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
+	// const [internalData, setInternalData] = React.useState<TData[]>(data);
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
 	const client = useQueryClient();
-	const {toast} = useToast();
 	const team = client.getQueryData<GetTeamType>([`team-${team_id}`]);
-	// console.log(tea)
-	const mutation = useMutation<string,IFormattedErrorResponse, string>({
-		mutationFn: async (id) => {
-			const formData = new FormData();
-			formData.append("file_id", id);
-			return await deleteFile({token,team_id,formData});
+
+	const { data: member } = useQuery({
+		queryKey: [`member-${team_id}`],
+		queryFn: async () => {
+			return await getmemberByTeamId(token, team_id);
 		},
-		onSuccess: () => {
-			console.log("success");
-			client.invalidateQueries({ queryKey: [`hydrate-file-${team_id}`] });
-		},
-		onError: (error) => {
-			console.log(error);
-			toast({title : error.message})
-		},
+		initialData: data,
 	});
+	const {toast} = useToast();
+	const queryClient = useQueryClient()
+	const mutation = useMutation<string,AxiosError<IFormattedErrorResponse>,  string>({
+        mutationFn : async (user_id) => {
+            const {data} = await deleteMember(token, team_id,user_id);
+            return data;
+        },
+        onSuccess : () => {
+            console.log('success')
+            queryClient.invalidateQueries({queryKey : ['hydrate-team']})
+        },
+		onError : (error) => {
+			console.log(error)
+			toast({title : error.message})
+		}
+        
+    });
 	const table = useReactTable({
-		data,
+		data: member,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		onSortingChange: setSorting,
@@ -88,7 +88,6 @@ export function DataTable<TData, TValue>({
 			columnFilters,
 		},
 	});
-
 	const search = table.getColumn("name") ? "name" : "username";
 	const isOwner = team?.user_role === "OWNER";
 	useEffect(() => {
@@ -114,7 +113,6 @@ export function DataTable<TData, TValue>({
 					}
 					className="w-[30%]"
 				/>
-				<UploadButton token={token} team_id={team_id} />
 			</div>
 			<div className="rounded-md ">
 				<Table>
@@ -159,41 +157,13 @@ export function DataTable<TData, TValue>({
 										</TableCell>
 									))}
 									<TableCell>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													variant="ghost"
-													className="h-8 w-8 p-0"
-												>
-													<span className="sr-only">
-														Open menu
-													</span>
-													<MoreHorizontal className="h-4 w-4" />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuLabel>
-													Actions{" "}
-												</DropdownMenuLabel>
-
-												<DropdownMenuSeparator />
-													<Link
-														href={(row.original as TeamFile).file_url}
-														target="_blank"
-													>
-												<DropdownMenuItem>
-														Download
-												</DropdownMenuItem>
-													</Link>
-												<DropdownMenuItem
-													onClick={() => {
-														mutation.mutate((row.original as TeamFile).file_id);
-													}}
-												>
-													Delete
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
+										<Button onClick={()=>{
+											console.log((row.original as MemberUser).member_id)
+											mutation.mutate((row.original as MemberUser).member_id)
+										}}>
+											<X />
+											<p>Remove</p>
+										</Button>
 									</TableCell>
 								</TableRow>
 							))

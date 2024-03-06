@@ -10,14 +10,16 @@ import { ColumnId } from "./KanbanBoard";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Kanbanform } from "./Kanbanform";
 import { TaskDetail } from "./TaskDetail";
+import { TeamRequest } from "@/type/team";
 
-export interface Task {
-  id: UniqueIdentifier;
-  columnId: ColumnId;
-  title:string;
-  description: string;
-  assignee : string;
-  duedate: string;
+export type Task =  {
+  task_id: UniqueIdentifier;
+  task_status: ColumnId;
+  task_name:string;
+  task_desc?: string;
+  user_id : string;
+  task_deadline?: string;
+  username? : string;
 }
 
 interface TaskCardProps {
@@ -32,7 +34,7 @@ export interface TaskDragData {
   task: Task;
 }
 
-export function TaskCard({ task, isOverlay }: TaskCardProps) {
+export function TaskCard({ task, isOverlay, token, team_id }: TaskCardProps & TeamRequest) {
   const {
     setNodeRef,
     attributes,
@@ -41,7 +43,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     transition,
     isDragging,
   } = useSortable({
-    id: task.id,
+    id: task.task_id,
     data: {
       type: "Task",
       task,
@@ -90,14 +92,14 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
         </Badge>
       </CardHeader>
       <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
-        {task.title}
+        {task.task_name}
       </CardContent>
     </Card>
 					</SheetTrigger>
 					<SheetContent className="w-[500px] md:max-w-[500px]" side={"right"}>
 						<SheetHeader>
 							<SheetTitle>Update Task</SheetTitle>
-							<TaskDetail {...task}/>
+							<TaskDetail task={task} team_id={team_id} token={token} />
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>

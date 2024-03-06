@@ -36,29 +36,82 @@ import { LoaderIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchUserInput } from "./SearchUserInput";
 import { teamsSchema } from "@/validator/teams";
+import { TypedFormData, getTypedFormData } from "@/lib/CustomFormData";
+import { CreateTeamRequest, CreateTeamResponse, GetTeamsType } from "@/type/team";
+import { useCreateTeam } from "@/store/TeamState";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTeam } from "@/api-caller/team";
+import { useToast } from "../ui/use-toast";
+import { AxiosError } from "axios";
+import { IFormattedErrorResponse } from "@/type/type";
 
-type Props = {};
+type Props = {
+	token : string;
+};
 
-const AddTeamsBox = (props: Props) => {
+const AddTeamsBox = ({token}: Props) => {
+	const {toast} = useToast();
+	const queryClient = useQueryClient()
+	const [team_id, setTeamId] = React.useState<string>('');
+	const mutation = useMutation<CreateTeamResponse,AxiosError<IFormattedErrorResponse>,TypedFormData<CreateTeamRequest>>({
+        mutationFn : async (formData) => {
+            const data = await createTeam({ token, formData });
+			setTeamId(data.team_id);
+            return data;
+        },
+        onSuccess : () => {
+            console.log('success')
+            queryClient.invalidateQueries({queryKey : ['hydrate-team']})
+			setFormStep(1);
+        },
+		onError : (error) => {
+			console.log(error.message)
+			toast({title : error.message})
+		}
+        
+    });
 	const [formStep, setFormStep] = React.useState<number>(0);
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof teamsSchema>>({
 		resolver: zodResolver(teamsSchema),
 		defaultValues: {
-			name: "",
-			description: "",
-			code : ""
+			team_name: "",
+			team_desc: "",
+			team_code : ""
 		},
 	});
 
+	const searching = async (value: string) => {
+		
+		  try {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/find?username=&email=${value}`, {
+			headers: {
+			  "Authorization": `Bearer ${token}`
+			}
+			});
+			return await res.json();
+		  } catch (error) {
+			console.error("Error fetching user data:", error);
+			throw error;
+		  }
+		  
+	  }
+
 	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof teamsSchema>) {
+	function OnSubmit(values: z.infer<typeof teamsSchema>) {
+		const {team_code,team_name,team_desc} = values
+		const formData : TypedFormData<CreateTeamRequest>= getTypedFormData<CreateTeamRequest>();
+		formData.append("team_name", team_name);
+		formData.append("team_desc", team_desc || '');
+		formData.append("team_code", team_code);
+		const data = mutation.mutate(formData);
+		console.log(data)
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
 		console.log(values);
 	}
 	return (
-			<Dialog>
+			<Dialog >
 				<DialogTrigger className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
 					<Plus size={40} />
 				</DialogTrigger>
@@ -75,12 +128,12 @@ const AddTeamsBox = (props: Props) => {
 					{formStep === 0 ? (
 							<Form {...form}>
 								<form
-									onSubmit={form.handleSubmit(onSubmit)}
+									onSubmit={form.handleSubmit(OnSubmit)}
 									className="space-y-4 p-5"
 								>
 									<FormField
 										control={form.control}
-										name="name"
+										name="team_name"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>Team Name</FormLabel>
@@ -96,7 +149,7 @@ const AddTeamsBox = (props: Props) => {
 									/>
 									<FormField
 										control={form.control}
-										name="description"
+										name="team_desc"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>
@@ -114,7 +167,7 @@ const AddTeamsBox = (props: Props) => {
 									/>
 									<FormField
 										control={form.control}
-										name="code"
+										name="team_code"
 										render={({ field }) => (
 											<FormItem>
 												<FormLabel>
@@ -129,15 +182,13 @@ const AddTeamsBox = (props: Props) => {
 									/>
 									<div className="space-x-4 text-end">
 										<DialogClose asChild>
-											<Button type="button">
+											<Button type="button" onClick={()=> {setFormStep(0)}}>
 												Cancle
 											</Button>
 										</DialogClose>
 										<Button
 											type="submit"
-											onClick={() => {
-												setFormStep(formStep + 1);
-											}}
+											disabled={form.formState.isSubmitting}
 										>
 											Submit
 										</Button>
@@ -146,18 +197,21 @@ const AddTeamsBox = (props: Props) => {
 							</Form>
 					) : (
 						<div className="w-full p-5 space-y-5">
-							{/* <div className="flex items-center justify-center  h-[200px]">
+							{mutation.isPending ? (<div className="flex items-center justify-center  h-[200px]">
 								<Loader2 size={40} className="animate-spin" />
-							</div> */}
+							</div>) :
+							(
+								<>
+								<SearchUserInput token={token} searchfn={searching} team_id={team_id}/>
+								<div className="text-end">
 
-							<SearchUserInput />
-							<div className="text-end">
+							<DialogClose asChild>
 
-							<DialogClose >
-
-							<Button >Skip</Button>
+							<Button onClick={()=> {setFormStep(0)}}>Skip</Button>
 							</DialogClose>
 							</div>
+								</>)}
+								
 						</div>
 					)}
 											</section>

@@ -5,8 +5,9 @@ type Props = {};
 import SignIn from "@/components/auth/SignIn";
 import { cookies } from "next/headers";
 import { SignInResponse } from "@/type/user";
+import WithoutAuth from "@/components/ui/WithoutAuth";
 
-export default function Login(props: Props) {
+function SigninPage(props: Props) {
 	async function setCookie(data: SignInResponse) {
 		"use server";
 		cookies().set({
@@ -17,7 +18,6 @@ export default function Login(props: Props) {
 			// cookie will be accessible by client's JavaScript
 			httpOnly: true,
 			// cookie will be sent only over HTTPS
-			secure: true,
 		});
 		cookies().set({
 			name: "refreshToken",
@@ -27,7 +27,6 @@ export default function Login(props: Props) {
 			// cookie will be accessible by client's JavaScript
 			httpOnly: true,
 			// cookie will be sent only over HTTPS
-			secure: true,
 		});
 		// to convert this string shit
 		// JSON.parse(decodeURI('cookies').replaceAll("%3A",":").replaceAll("%2C", ","))
@@ -59,3 +58,6 @@ export default function Login(props: Props) {
 		</div>
 	);
 }
+
+
+export default WithoutAuth(SigninPage)

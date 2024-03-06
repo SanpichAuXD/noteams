@@ -4,28 +4,37 @@ import { DataTable } from "@/components/file/data-table";
 import React, { useEffect, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
 // import { toast } from "sonner"
- import { useFileStore } from './../../store/FileStore';
 import { Files, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import UploadButton from "./UploadButton";
+import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
+import { TeamFile } from "@/type/team";
+import { IFormattedErrorResponse } from "@/type/type";
+import { getFiles, uploadFile } from "@/api-caller/file";
 
-// type UploadProps = {
-// 	data: FileTable[];
-// };
+type UploadProps = {
+	token : string;
+	team_id : string
+};
 
 const UploadDnd = (
 	// { data }: UploadProps
+	{token, team_id} : UploadProps
 	) => {
+	const {data} = useQuery<TeamFile[], IFormattedErrorResponse>({
+		queryKey: [`hydrate-file-${team_id}`],
+		queryFn: async () => await getFiles({ token: token, team_id:team_id }),
+		
+	});
+	console.log(data, 'hydrate file')
 	const [dragActive, setDragActive] = useState<boolean>(false);
 	const inputRef = useRef<any>(null);
-	const {addFile,files} = useFileStore()
 	const [files1, setFiles] = useState<any>([]);
     const {toast} = useToast()
 	// useEffect(() => {
 	// 	setFilestate(data)
 	// }, [data,	setFilestate]);
 	const role = 'member'
-	console.log(files)
 	function handleChange(e: any) {
 		e.preventDefault();
 		console.log("File has been added");
@@ -37,27 +46,20 @@ const UploadDnd = (
 		}
 	}
 
-	// async function handleSubmitFile(e: any) {
-	// 	const formData = new FormData();
-	// 	if (files1.length === 0) {
-	// 		// no file has been submitted
-	// 	} else {
-	// 		// write submit logic here
-	// 		files.forEach((file: File) => {
-	// 			console.log(typeof file, "check type file");
-	// 			formData.append("files", file);
-	// 		});
-	// 		console.log(formData.get("file"));
-	// 		const response = await fetch(
-	// 			`${process.env.NEXT_PUBLIC_API_PROD_URL}/files/upload`,
-	// 			{
-	// 				method: "POST",
-	// 				body: formData,
-	// 			}
-	// 		);
-	// 		console.log(response);
-	// 	}
-	// }
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation<TeamFile[], IFormattedErrorResponse, FormData>({
+		mutationFn: async (formData) => {
+			return await uploadFile({token:token, team_id:team_id, formData});
+		},
+		onSuccess: () => {
+			console.log("success");
+			queryClient.invalidateQueries({ queryKey: ["hydrate-file"] });
+		},
+		onError: (error) => {
+			toast({title : error.message, variant : 'destructive'})
+		},
+	});
 
 	function handleDrop(e: any) {
 		e.preventDefault();
@@ -65,20 +67,13 @@ const UploadDnd = (
 		setDragActive(false);
 		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
 			console.log("file drop")
+			const formData = new FormData()
 			for (let i = 0; i < e.dataTransfer.files["length"]; i++) {
-				setFiles((prevState: any) => [
-					...prevState,
-					e.dataTransfer.files[i],
-				]);
-				addFile({
-					id: "3",
-					name: e.dataTransfer.files[i].name,
-					email: "email3",
-					url: "url3",
-					createdAt: new Date().toDateString(),
-				});
+				formData.append('files', e.dataTransfer.files[i])
+				
                 toast({title : `File ${e.dataTransfer.files[i].name} has uploading`})
 			}
+			mutation.mutate(formData)
 			// console.log([...data, ...files]);
 		}
 	}
@@ -101,16 +96,7 @@ const UploadDnd = (
 		setDragActive(true);
 	}
 
-	function removeFile(fileName: any, idx: any) {
-		const newArr = [...files];
-		newArr.splice(idx, 1);
-		setFiles([]);
-		setFiles(newArr);
-	}
-	function openFileExplorer() {
-		inputRef.current.value = "";
-		inputRef.current.click();
-	}
+	
 	return (
 		<div className="w-full max-h-min">
 			<form
@@ -157,11 +143,10 @@ const UploadDnd = (
           </span>
         </div>
       ))} */}
-	  				
-					<DataTable columns={columns} data={files} />
+					{data && <DataTable columns={columns} data={data!} token={token} team_id={team_id} />}
 				</div>
-
-				{/* <button
+{/* 
+				<button
     disabled={files.length === 0}
       className="bg-black rounded-lg p-2 mt-3 w-auto"
       onClick={handleSubmitFile}

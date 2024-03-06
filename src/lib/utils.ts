@@ -5,6 +5,7 @@ import { ColumnDragData } from "@/components/kanban/BoardColumn";
 import { TaskDragData } from "@/components/kanban/TaskCard";
 import { IFormattedErrorResponse} from "@/type/type";
 import { AxiosError, isAxiosError } from "axios";
+import { SignupRequest } from "@/type/user";
 
 
 
@@ -51,22 +52,37 @@ export function formattedError(
   if (error instanceof Error) {
     return {
       message: error.message,
+      status: 500,
     };
   }
   return {
     message: "error",
+    status: 500,
   };
 }
 
 export function isResponseError<T>(respone: T | IFormattedErrorResponse): respone is IFormattedErrorResponse {
-  return (respone as IFormattedErrorResponse).status !== undefined;
+  return !!(respone as IFormattedErrorResponse).message
 }
 
 
-export function getUserCookie(cookie : string): string {
-  return cookie.split(";")[0].split("=")[1].replaceAll('%22','"').replaceAll('%7B','{').replaceAll('%7D','}').replaceAll('%3A',':').replaceAll('%2C', ',');
+export function getProperty<T, K extends keyof T>(obj: T, key: K) {
+	return obj[key];
 }
 
-export function formatCookie(cookie: string): string {
-  return cookie.replaceAll('%22','"').replaceAll('%7B','{').replaceAll('%7D','}').replaceAll('%3A',':').replaceAll('%2C', ',');
+export function formatCookie(cookie : string): string {
+  return decodeURIComponent(cookie);
+}
+export function getCookieByName(name: string): string {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+      return parts.pop()?.split(';').shift() || '';
+  }
+  return '';
+}
+
+/// only use this function in client side
+export function getUserCookie() : string { 
+  return document.cookie.split(";")[0].split("=")[1].replaceAll('%22','"').replaceAll('%7B','{').replaceAll('%7D','}').replaceAll('%3A',':').replaceAll('%2C', ',');
 }
