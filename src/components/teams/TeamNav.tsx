@@ -21,6 +21,7 @@ const TeamNav = ({team_id,token}: Props) => {
 		
 		try {
 		  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/find?username=&email=${value}`, {
+			
 		  headers: {
 			"Authorization": `Bearer ${token}`
 		  }
