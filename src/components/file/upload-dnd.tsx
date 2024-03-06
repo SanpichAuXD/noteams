@@ -54,7 +54,7 @@ const UploadDnd = (
 		},
 		onSuccess: () => {
 			console.log("success");
-			queryClient.invalidateQueries({ queryKey: ["hydrate-file"] });
+			queryClient.invalidateQueries({ queryKey: [`hydrate-file-${team_id}`] });
 		},
 		onError: (error) => {
 			toast({title : error.message, variant : 'destructive'})

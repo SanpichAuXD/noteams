@@ -20,7 +20,7 @@ const UploadButton = ({token , team_id, multiple} : UploadProps) => {
 		},
 		onSuccess: () => {
 			console.log("success");
-			queryClient.invalidateQueries({ queryKey: ["hydrate-file"] });
+			queryClient.invalidateQueries({ queryKey: [`hydrate-file-${team_id}`] });
 		},
 		onError: (error) => {
 			console.log(error);
