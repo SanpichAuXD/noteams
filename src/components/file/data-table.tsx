@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
 		},
 	});
 
-	const search = table.getColumn("name") ? "name" : "username";
+	const search = table.getColumn("file_name") ? "file_name" : "username";
 	const isOwner = team?.user_role === "OWNER";
 	useEffect(() => {
 		table.getAllColumns().map((column) => {
