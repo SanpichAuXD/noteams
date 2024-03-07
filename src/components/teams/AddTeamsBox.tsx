@@ -112,7 +112,7 @@ const AddTeamsBox = ({token}: Props) => {
 	}
 	return (
 			<Dialog >
-				<DialogTrigger className="bg-white  shadow-xl rounded  h-[200px] flex flex-col justify-center items-center p-5">
+				<DialogTrigger className="bg-white  shadow-xl rounded  h-[220px] flex flex-col justify-center items-center p-5">
 					<Plus size={40} />
 				</DialogTrigger>
 

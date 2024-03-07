@@ -58,22 +58,22 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 	if (!teams) return null;
 	const team = teams[teams.findIndex((team) => team.team_id === id)];
 	return (
-		<div className="bg-white shadow-xl  rounded  h-[200px]  flex flex-col justify-center items-center p-5">
+		<div className="bg-white shadow-xl  rounded  h-[220px]  flex flex-col justify-center items-center p-5 py-8">
 			<Link
 			href={`teams/${id}`}
 			>
 			<Image
-				src={image}
+				src={"https://placehold.co/600x400/png"}
 				alt="reg-vector"
 				width={0}
 				height={0}
 				sizes="100vw"
-				className="w-[70%] max-h-[130px] h-[100%] p-4 rounded-lg"
+				className="max-h-[150px] min-h-[150px] h-[100%] p-2 rounded-lg"
 				/>
 						</Link>
 					
 			<div className="flex items-center justify-between  font-bold w-full">
-				<p className="text-center text-lg self-center">{title}</p>
+				<p className="text-center self-center line-clamp-2">{title}</p>
 				<DropdownMenu>
 					<DropdownMenuTrigger className="focus:outline-none">
 						<MoreVertical />
