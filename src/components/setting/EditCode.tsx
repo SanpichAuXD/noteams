@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/use-toast"
+import { useToast } from '@/components/ui/use-toast'
 import { updateCodeTeam } from "@/api-caller/team"
 
 const FormSchema = z.object({
@@ -36,7 +36,7 @@ export function CodeInputForm({code, token,team_id } : Props) {
       code: code,
     },
   })
-
+  const {toast} = useToast()
   async function onSubmit(data: z.infer<typeof FormSchema>) {
           try{
             const res = await updateCodeTeam({token, team_id, team_code: data.code})
