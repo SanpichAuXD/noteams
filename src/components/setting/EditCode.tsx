@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from '@/components/ui/use-toast'
 import { updateCodeTeam } from "@/api-caller/team"
+import { IFormattedErrorResponse } from "@/type/type"
 
 const FormSchema = z.object({
   code: z.string().min(6, {
@@ -42,7 +43,7 @@ export function CodeInputForm({code, token,team_id } : Props) {
             const res = await updateCodeTeam({token, team_id, team_code: data.code})
             console.log(res)
           }catch(error){
-            toast({title : "error", description : error.message, variant : "desctructive"})
+            toast({title : "error" , description : (error as IFormattedErrorResponse).message, variant : "destructive"})
           }
   }
 
