@@ -38,22 +38,12 @@ export function CodeInputForm({code, token,team_id } : Props) {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(form.formState.isDirty)
-    if(!form.formState.isDirty){
-        toast({
-            title: "Please Edit Code",
-            description: "Code is the same as before",
-          })
-        }
-        else{
           try{
             const res = await updateCodeTeam({token, team_id, team_code: data.code})
             console.log(res)
           }catch(error){
-            console.log(error)
+            toast({title : "error", description : error.message, variant : "desctructive"})
           }
-          
-    }
   }
 
   return (
