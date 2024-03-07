@@ -7,6 +7,7 @@ import { IFormattedErrorResponse } from "@/type/type";
 import { TeamFile } from "@/type/team";
 import { toast } from "sonner";
 import { uploadFile } from "@/api-caller/file";
+import {  useToast } from '@/components/ui/use-toast';
 type UploadProps = {
   token: string;
   team_id: string;
@@ -14,6 +15,7 @@ type UploadProps = {
 };
 const UploadButton = ({token , team_id, multiple} : UploadProps) => {
 	const queryClient = useQueryClient();
+	const {toast} = useToast()
 	const mutation = useMutation<TeamFile[], IFormattedErrorResponse, FormData>({
 		mutationFn: async (formData) => {
 			return await uploadFile({token:token, team_id:team_id, formData});
@@ -24,6 +26,7 @@ const UploadButton = ({token , team_id, multiple} : UploadProps) => {
 		},
 		onError: (error) => {
 			console.log(error);
+			toast({ title: error.message });
 		},
 	});
 	const handleFileUpload = () => {
