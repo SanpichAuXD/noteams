@@ -58,7 +58,6 @@ export function CodeInputForm({code, token,team_id } : Props) {
               <FormControl>
                 <Input placeholder="Enter your code" {...field} />
               </FormControl>
-              
               <FormMessage />
             </FormItem>
           )}
