@@ -112,12 +112,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 		// }
 	}
 
-	if (!access && !noauthpath.includes(request.nextUrl.pathname)) {
-		// console.log("middleware go to signin");
-		return NextResponse.redirect(new URL("/signin", request.nextUrl));
-	}
 	if(access && noauthpath.includes(request.nextUrl.pathname)){
+		console.log("middleware go to teams");
 		return NextResponse.redirect(new URL("/teams", request.nextUrl));
+	}
+	if (!access && !noauthpath.includes(request.nextUrl.pathname)) {
+		console.log("middleware go to signin");
+		return NextResponse.redirect(new URL("/signin", request.nextUrl));
 	}
 	console.log("middleware end ");
 	return NextResponse.next();
