@@ -23,7 +23,7 @@ const Settings = ({token,team_id,team}: SettingsProps) => {
       console.log(`team-${team_id}`)
       const queryClient  = useQueryClient();
       const teamData = queryClient.getQueryData<GetTeamType>([`team-${team_id}`]);
-      const role = teamData ? teamData!.user_role : 'MEMBER'
+      const role = teamData ? teamData!.user_role : 'OWNER'
   return (
     <div className="flex flex-row justify-center py-5">
 							<SettingImage token={token} role={role} team_id={team_id} image={team.team_poster} />
