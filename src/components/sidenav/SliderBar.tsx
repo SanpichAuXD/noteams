@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { error } from "console";
 import destr from "destr";
 import { SignupRequest } from "@/type/user";
+import { useToast } from "../ui/use-toast";
 
 // Define the Sidenav component
 type SidenavProps = {
@@ -21,6 +22,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	const [sidebarExpanded, setSidebarExpanded] = useState(false);
 	// const [cookie, setCookie] = useState('')
 	const router = useRouter();
+	const {toast} = useToast();
 	// const cookie = formatCookie(document.cookie)
     // const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
 	// Create a reference to the sidebar element
@@ -66,10 +68,11 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 							}  welcome-step text-2xl font-medium tracking-tighter text-black focus:outline-none focus:ring whitespace-nowrap cursor-pointer`}
 						>
 							<Image
-								className="mt-2 mb-8 h-100 w-32"
-								src="/next.svg"
-								height={32}
-								width={300}
+								className="mt-2 mb-8 h-12 w-44"
+								src="/Noteams.png"
+								height={0}
+								width={0}
+								sizes={"100vw"}
 								alt="logoa"
 							/>
 						</span>
@@ -131,16 +134,17 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 						method : 'POST',
 										
 					})
-					const data = await response.json();
-					console.log(data, 'data')
-					if (data.status === 200) {
+					try{
+						const data = await response.json();
+						console.log(data, 'data')
 						console.log("signout successfull!");
 						router.refresh();
 					}
-					else{
-						alert(response)
-					}
-			  }}
+					catch(error){
+					toast({title: "Failed to signout", description: "Please Refresh the page and try again", variant : "destructive"})					
+					
+			  }
+			}}
             />
           </ul>
         </div>
