@@ -13,7 +13,7 @@ const File  = async({ params }: { params: { teamId: string } }) => {
   const token = cookies().get("accessToken")?.value!;
 	
 	
-		const member = await getmemberByTeamId(token, params.teamId)
+		const member = await getmemberByTeamId({token, team_id:params.teamId})
  
   return (
     <div className="min-h-[90vh] p-10  flex flex-col items-center">

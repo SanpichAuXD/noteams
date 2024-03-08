@@ -9,7 +9,7 @@ import Image from 'next/image'
 
  async function Kanban({ params }: { params: { teamId: string } }) {
   const token = cookies().get("accessToken")?.value!;
-	const member = await getmemberByTeamId(token, params.teamId)
+	const member = await getmemberByTeamId({token, team_id:params.teamId})
 	const queryClient  = new QueryClient();
 	await queryClient.prefetchQuery({
 		queryKey: [`task-${params.teamId}`],

@@ -57,3 +57,9 @@ export type TeamFile = {
     username : string;
     created_at : string;
 }
+
+export type AboutTeam = {
+    team_name : string;
+    team_poster : string;
+    team_desc : string;
+}

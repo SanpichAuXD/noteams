@@ -16,7 +16,7 @@ type SettingsProps = {
 const Settings = ({token,team_id,team}: SettingsProps) => {
     const { data } = useQuery<GetSettingResponse,IFormattedErrorResponse>({
         queryKey: [`setting-${team_id}`],
-		queryFn: ()=> getTeamSetting(token, team_id),
+		queryFn: ()=> getTeamSetting({token, team_id}),
         initialData : team,
         staleTime: 10 * 1000,
       });

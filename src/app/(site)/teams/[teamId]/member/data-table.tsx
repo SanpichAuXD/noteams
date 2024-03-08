@@ -54,7 +54,7 @@ export function MemberTable<TData, TValue>({
 	const { data: member } = useQuery({
 		queryKey: [`member-${team_id}`],
 		queryFn: async () => {
-			return await getmemberByTeamId(token, team_id);
+			return await getmemberByTeamId({token, team_id});
 		},
 		initialData: data,
 	});
@@ -62,7 +62,7 @@ export function MemberTable<TData, TValue>({
 	const queryClient = useQueryClient()
 	const mutation = useMutation<string,AxiosError<IFormattedErrorResponse>,  string>({
         mutationFn : async (user_id) => {
-            const {data} = await deleteMember(token, team_id,user_id);
+            const {data} = await deleteMember({token, team_id,user_id});
             return data;
         },
         onSuccess : () => {

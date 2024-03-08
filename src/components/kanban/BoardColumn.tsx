@@ -80,7 +80,7 @@ export function BoardColumn({
 	const { data: members } = useQuery<MemberUser[]>({
 		queryKey: [`member-${team_id}`],
 		queryFn: async () => {
-			return await getmemberByTeamId(token, team_id);
+			return await getmemberByTeamId({token, team_id});
 		},
 		initialData: member,
 	});

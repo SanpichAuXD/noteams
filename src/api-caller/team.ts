@@ -47,7 +47,7 @@ export async function createTeam({ token, formData }: { token: string; formData:
     }
 }
 
-export const getTeamById = async (token : string, team_id : string) => {
+export const getTeamById = async ({token , team_id }: TeamRequest) => {
     try{
 
     const {data} = await getInstance().get(`/teams/${team_id}`, {
@@ -63,7 +63,7 @@ export const getTeamById = async (token : string, team_id : string) => {
 }
 
 
-export const getmemberByTeamId = async (token : string, team_id : string) => {
+export const getmemberByTeamId = async ({token , team_id }: TeamRequest) => {
     try{
 
     const {data} = await getInstance().get(`/teams/member/${team_id}`, {
@@ -91,7 +91,7 @@ export const joinTeams = async (token : string, formData : TypedFormData<JoinTea
        throw formattedError(error)
    }
 }
-export const inviteMember = async ({ token, team_id, users }: { token: string; team_id: string; users: string[]; }) => {
+export const inviteMember = async ({ token, team_id, users }: TeamRequest & {users : string[]}) => {
     try{
 
     const {data} = await getInstance().post(`/teams/invite/${team_id}`, {users},{
@@ -104,7 +104,7 @@ export const inviteMember = async ({ token, team_id, users }: { token: string; t
     }
 }
 
-export const deleteMember = async (token : string, team_id : string, user_id : string) => {
+export const deleteMember = async ({token , team_id , user_id } : TeamRequest & {user_id : string}) => {
     try{
 
     const {data} = await getInstance().delete(`/teams/${team_id}/member/${user_id}`, {
@@ -119,7 +119,7 @@ catch(error){
 }
 }
 
-export const getTeamSetting = async (token : string, team_id : string) : Promise<GetSettingResponse> => {
+export const getTeamSetting = async ({token , team_id } : TeamRequest) : Promise<GetSettingResponse> => {
     try{
 
     const {data} = await getInstance().get(`/teams/setting/${team_id}`, {
@@ -162,7 +162,7 @@ catch(error){
 }
 
 
-export const deleteTeam = async (token : string, team_id : string) => {
+export const deleteTeam = async ({token, team_id} : TeamRequest) => {
     try{
         const {data} = await getInstance().delete(`/teams/${team_id}`, {
             headers:{
@@ -203,7 +203,7 @@ export const updateCodeTeam = async ({token,team_id, team_code} : TeamRequest & 
 }
 
 
-export const LeaveTeam = async (token : string, team_id : string) => {
+export const LeaveTeam = async ({token , team_id } : TeamRequest) => {
     try{
 
         const {data} = await getInstance().put(`/teams/exit/${team_id}`, {

@@ -3,7 +3,7 @@ import { formattedError } from "@/lib/utils";
 import { TeamRequest } from "@/type/team";
 import { IFormattedErrorResponse } from "@/type/type";
 
-export async function uploadFile({token, team_id , formData} : {token : string, team_id : string, formData : FormData}) : Promise<any | IFormattedErrorResponse> {
+export async function uploadFile({token, team_id , formData} : TeamRequest &  { formData : FormData}) : Promise<any | IFormattedErrorResponse> {
     try {
         const {data}  = await getInstance().post(`/files/upload/${team_id}`,formData,{
             headers : {
@@ -34,7 +34,7 @@ export async function getFiles({token, team_id} : TeamRequest){
     }
 }
 
-export async function deleteFile({token, team_id, formData} : {token : string, team_id : string, formData : FormData})  {
+export async function deleteFile({token, team_id, formData} : TeamRequest & {formData : FormData})  {
     try {
         const {data}  = await getInstance().delete(`/files/${team_id}`,{
             headers : {

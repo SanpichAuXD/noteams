@@ -85,7 +85,7 @@ export function Kanbanform({column, token, team_id} : KanbanformProps) {
   const { data: members } = useQuery<MemberUser[]>({
 		queryKey: [`member-${team_id}`],
 		queryFn: async () => {
-			return await getmemberByTeamId(token, team_id);
+			return await getmemberByTeamId({token, team_id});
 		},
 	});
   const form = useForm<z.infer<typeof TaskSchema>>({

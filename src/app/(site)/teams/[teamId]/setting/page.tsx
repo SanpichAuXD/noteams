@@ -33,7 +33,7 @@ type Props = {};
 
 const SettingPage = async({ params }: { params: { teamId: string } }) => {
 	const token = cookies().get("accessToken")?.value!;
-	const data = await getTeamSetting(token, params.teamId);
+	const data = await getTeamSetting({token, team_id:params.teamId});
 	
 	return (
 		<div className="w-[90%] p-20">
