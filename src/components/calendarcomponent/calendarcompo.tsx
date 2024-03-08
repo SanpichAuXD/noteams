@@ -23,12 +23,19 @@ interface Event {
   description: string;
 }
 
-function CalendarC() {
+interface ChildComponentProps {
+  teams: Event[];
+}
+
+function CalendarC({teams} : ChildComponentProps) {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [fetchDaysApi, setFetchDaysApi] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showOpenModal, setShowOpenModal] = useState(false);
   const [idToOpen, setIdToOpen] = useState("");
+  
+  // const team = teamxd;
+  // console.log("team props = ", teams)
 
   // API WAN YUTH
   useEffect(() => {
@@ -66,9 +73,13 @@ function CalendarC() {
     fetchData();
   }, []);
 
-  console.log(allEvents);
+  // console.log(allEvents);
 
   const Merge = [...allEvents, ...events];
+  const Merge2 : Event[] = [...Merge, ...teams]
+
+  // console.log("Merget2 ",Merge2)
+
 
   function handleOpenModal(data: { event: { id: string } }) {
     setShowOpenModal(true);
@@ -89,7 +100,7 @@ function CalendarC() {
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
           weekends={true}
-          events={Merge as EventSourceInput}
+          events={Merge2 as EventSourceInput}
           nowIndicator={true}
           eventContent={renderEventContent}
           eventClick={(data) => handleOpenModal(data)}
@@ -143,13 +154,13 @@ function CalendarC() {
                         >
                           {/* {idToOpen} */}
 
-                          {Merge.map((event) =>
+                          {Merge2.map((event) =>
                             event.id === idToOpen ? event.title : null
                           )}
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-800">
-                            {Merge.map((event) =>
+                            {Merge2.map((event) =>
                               event.id === idToOpen ? event.description : null
                             )}
                           </p>
