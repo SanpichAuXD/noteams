@@ -4,6 +4,7 @@ import { SignupRequest } from "@/type/user";
 import destr from "destr";
 import { TypedFormData } from '@/lib/CustomFormData';
 import { CreateTeamRequest, GetSettingResponse, GetTeamsType, JoinTeamRequest, SettingRequest, TeamRequest } from "@/type/team";
+import { IFormattedErrorResponse } from "@/type/type";
 export async function getTeams(token:string) : Promise<GetTeamsType[]
 // | IFormattedErrorResponse
 >{
@@ -188,7 +189,7 @@ export const UpdateTeamPermission = async ({token,team_id,permissionType,value} 
     }
 }
 
-export const updateCodeTeam = async ({token,team_id, team_code} : TeamRequest & {team_code : string}) => {
+export const updateCodeTeam = async ({token,team_id, team_code} : TeamRequest & {team_code : string}) : Promise<string | IFormattedErrorResponse> => {
     try{
 
     const {data} = await getInstance().put(`/teams/code/${team_id}`, {team_code}, {
@@ -213,4 +214,16 @@ export const LeaveTeam = async (token : string, team_id : string) => {
         }catch(error){
             throw formattedError(error)
         }
+}
+
+export const getAbout = async ({token , team_id} : TeamRequest) => {
+    try{
+        const {data} = await getInstance().get(`/teams/about/${team_id}`, {
+            headers:{
+                "Authorization" : `Bearer ${token}`
+            }})
+            return data;
+        }catch(error){
+        throw formattedError(error)
+    }
 }
