@@ -30,7 +30,7 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 	const {toast} = useToast();
 	const delTeammutation = useMutation<string,IFormattedErrorResponse>({
 		mutationFn : async () => {
-			const {data} = await deleteTeam( token, id );
+			const {data} = await deleteTeam( {token, team_id:id });
             return data;
         },
         onSuccess : () => {
@@ -44,7 +44,7 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 	
 	const leaveTeammutation = useMutation<string,IFormattedErrorResponse>({
 		mutationFn : async () => {
-			const {data} = await LeaveTeam( token, id );
+			const {data} = await LeaveTeam({ token, team_id:id });
             return data;
         },
         onSuccess : (data) => {
