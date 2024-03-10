@@ -14,22 +14,17 @@ pipeline {
             stage('Building Stage'){
                 steps {
                     echo 'we are building bro ;-;'
-                    dir('Noteams') {
-
                         sh "docker compose build"
-                    }
                 }
             }
 
             stage('Pushing Stage'){
                 steps {
                     echo 'we are pushing bro ;-;'
-                    dir('Noteams') {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                             sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
                         }
                         sh 'docker push fixfireza/noteams-frontend:latest'
-                    }
                 }
             }
             stage('Trigger to slave job'){
