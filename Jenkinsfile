@@ -13,7 +13,7 @@ pipeline {
 
             stage('Building Stage'){
                 steps {
-                    echo 'we are building bro ;-; xd'
+                    echo 'we are building bro ;-; xd '
                         sh "docker compose build"
                 }
             }
