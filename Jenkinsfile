@@ -6,10 +6,8 @@ pipeline {
                 steps {
                     echo 'we are initializing bro ;-;'
                     echo 'Initial : Delete containers and images'
-                     dir('Noteams') {
-                        sh 'docker system prune -a'
-                        sh 'docker compose down --rmi all --volumes || true'
-                     }
+                    sh 'docker system prune -a'
+                    sh 'docker compose down --rmi all --volumes || true'
                 }
             }
 
