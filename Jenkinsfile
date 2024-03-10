@@ -27,6 +27,7 @@ pipeline {
                         sh 'docker push fixfireza/noteams-frontend:latest'
                 }
             }
+            
             stage('Trigger to slave job'){
                 steps {
                     build job: 'SlaveJobFE'
