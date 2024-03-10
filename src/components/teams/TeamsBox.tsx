@@ -68,7 +68,7 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 				width={0}
 				height={0}
 				sizes="100vw"
-				className="max-h-[150px] min-h-[150px] h-[100%] p-2 rounded-lg"
+				className="max-h-[150px] w-fit min-h-[150px] h-[100%] p-2 rounded-lg"
 				/>
 						</Link>
 					
