@@ -17,7 +17,6 @@ pipeline {
                         sh "docker compose build"
                 }
             }
-
             stage('Pushing Stage'){
                 steps {
                     echo 'we are pushing bro ;-;'
