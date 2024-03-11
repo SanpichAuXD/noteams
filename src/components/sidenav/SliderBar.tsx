@@ -84,7 +84,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 							className={`${
 								!sidebarExpanded ? "lg:hidden" : "block"
 							} mt-1 mb-8 h-8 w-8`}
-							src="/next.svg"
+							src="/Noteams.png"
 							height={100}
 							width={100}
 							alt="logo"

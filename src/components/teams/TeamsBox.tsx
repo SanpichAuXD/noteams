@@ -63,12 +63,12 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 			href={`teams/${id}`}
 			>
 			<Image
-				src={"https://placehold.co/600x400/png"}
+				src={team.team_poster}
 				alt="reg-vector"
 				width={0}
 				height={0}
 				sizes="100vw"
-				className="max-h-[150px] min-h-[150px] h-[100%] p-2 rounded-lg"
+				className="max-h-[150px] w-fit min-h-[150px] h-[100%] p-2 rounded-lg"
 				/>
 						</Link>
 					
