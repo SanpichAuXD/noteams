@@ -25,8 +25,9 @@ import {
 import { Input } from "../ui/input";
 import { Kanbanform } from './Kanbanform';
 import { MemberUser } from "@/type/user";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getmemberByTeamId } from "@/api-caller/team";
+import { GetTeamType } from "@/type/team";
 
 export interface Column {
 	id: UniqueIdentifier;
@@ -60,6 +61,9 @@ export function BoardColumn({
 	const tasksIds = useMemo(() => {
 		return tasks.map((task) => task.task_id);
 	}, [tasks]);
+	const queryClient = useQueryClient()
+	const team = queryClient.getQueryData<GetTeamType>([`team-${team_id}`]);
+	const isAllow = team?.allow_task || team?.user_role === "OWNER";
 	const {
 		setNodeRef,
 		attributes,
@@ -119,7 +123,7 @@ export function BoardColumn({
 				<Button
 					variant={"ghost"}
 					{...attributes}
-					{...listeners}
+					// {...listeners}
 					className=" p-1 text-primary/50 -ml-2 h-auto cursor-grab relative"
 				>
 					<span className="sr-only">{`Move column: ${column.title}`}</span>
@@ -128,20 +132,21 @@ export function BoardColumn({
 				<span className="ml-auto"> {column.title}</span>
 			</CardHeader>
 			<ScrollArea>
-				<CardContent className="flex flex-grow flex-col gap-2 p-2">
+				<CardContent className="flex flex-grow flex-col gap-2 p-2 ">
 					<SortableContext items={tasksIds}>
 						{tasks.map((task) => (
 							<TaskCard key={task.task_id} task={task} team_id={team_id} token={token} />
 						))}
+						{tasks.length === 0 && <p className="text-2xl font-bold text-center">No Task in Team</p>}
 					</SortableContext>
 				</CardContent>
 			</ScrollArea>
 			<CardFooter>
 				<Sheet >
-					<SheetTrigger className="flex h-10 space-x-2 items-center justify-center w-full bg-black text-white rounded-lg hover:opacity-80">
+					{isAllow && <SheetTrigger className="flex h-10 space-x-2 items-center justify-center w-full bg-black text-white rounded-lg hover:opacity-80">
 						<PlusCircle size={24} />
 						<span>Add Task</span>
-					</SheetTrigger>
+					</SheetTrigger>}
 					<SheetContent className="w-[500px] md:max-w-[500px]" side={"right"}>
 						<SheetHeader>
 							<SheetTitle>Add Task</SheetTitle>

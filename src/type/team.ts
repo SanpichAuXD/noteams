@@ -5,7 +5,7 @@ export type GetTeamsType = {
     role : 'OWNER' | 'MEMBER';
 }
 
-export type GetTeamType = GetTeamsType & {user_role : 'OWNER' | 'MEMBER' }
+export type GetTeamType = GetTeamsType & TeamSetting & {user_role : 'OWNER' | 'MEMBER' }
 
 export type CreateTeamRequest = {
     team_name: string;

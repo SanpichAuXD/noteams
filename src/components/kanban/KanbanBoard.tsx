@@ -1,21 +1,21 @@
-"use client"
+"use client";
 import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BoardColumn, BoardContainer } from "./BoardColumn";
 import {
-  DndContext,
-  type DragEndEvent,
-  type DragOverEvent,
-  DragOverlay,
-  type DragStartEvent,
-  useSensor,
-  useSensors,
-  KeyboardSensor,
-  Announcements,
-  UniqueIdentifier,
-  TouchSensor,
-  MouseSensor,
+	DndContext,
+	type DragEndEvent,
+	type DragOverEvent,
+	DragOverlay,
+	type DragStartEvent,
+	useSensor,
+	useSensors,
+	KeyboardSensor,
+	Announcements,
+	UniqueIdentifier,
+	TouchSensor,
+	MouseSensor,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { type Task, TaskCard } from "./TaskCard";
@@ -31,360 +31,401 @@ import { AxiosError } from "axios";
 import { CreateTeamRequest, GetTeamType, TeamRequest } from "@/type/team";
 import { updateStatusTaskRequest } from "@/type/task";
 import { MemberUser } from "@/type/user";
+import { useToast } from "../ui/use-toast";
 
 const defaultCols = [
-  {
-    id: "TODO" as const,
-    title: "Todo",
-  },
-  {
-    id: "DOING" as const,
-    title: "Doing",
-  },
-  {
-    id: "DONE" as const,
-    title: "Done",
-  },
+	{
+		id: "TODO" as const,
+		title: "Todo",
+	},
+	{
+		id: "DOING" as const,
+		title: "Doing",
+	},
+	{
+		id: "DONE" as const,
+		title: "Done",
+	},
 ] satisfies Column[];
 
 export type ColumnId = (typeof defaultCols)[number]["id"];
 
 export type kanbanPropType = {
-  token : string;
-  team_id : string;
-  member : MemberUser[];
-}
-export function KanbanBoard({token, team_id, member} : kanbanPropType) {
-  // const { tasks, addTask, setTasks} = useTaskStore()
-  const {data, isPending} = useGetAllTask(token, team_id)
-  const queryClient = useQueryClient()
-  const isOwner = queryClient.getQueryData<GetTeamType>([`team-${team_id}`])?.user_role === 'OWNER'
-  const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,updateStatusTaskRequest>({
-    mutationFn : async ({task_id , status} : updateStatusTaskRequest) => {
-      const {data} = await updateStatusTask({task_id , status, team_id, token});
-      return data;
-  },
-  onSuccess : () => {
-    console.log('success')
-    queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
-},
-onError : (error) => {
-console.log(error.response?.data.message)
-}
-  })
-  const [columns, setColumns] = useState<Column[]>(defaultCols);
-  const pickedUpTaskColumn = useRef<ColumnId | null>(null);
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
-//   const [tasks, setTasks] = useState<Task[]>(initialTasks);
- 
+	token: string;
+	team_id: string;
+	member: MemberUser[];
+};
+export function KanbanBoard({ token, team_id, member }: kanbanPropType) {
+	// const { tasks, addTask, setTasks} = useTaskStore()
+	const { data, isPending } = useGetAllTask(token, team_id);
+	const queryClient = useQueryClient();
+	const { toast } = useToast();
+	const team = queryClient.getQueryData<GetTeamType>([`team-${team_id}`]);
+	const isOwner =
+		team?.user_role === "OWNER";
+	const isAllow = team?.allow_task
+	console.log(isOwner , isAllow, isOwner || isAllow)
+	const mutation = useMutation<
+		any,
+		AxiosError<IFormattedErrorResponse>,
+		updateStatusTaskRequest
+	>({
+		mutationFn: async ({ task_id, status }: updateStatusTaskRequest) => {
+			const { data } = await updateStatusTask({
+				task_id,
+				status,
+				team_id,
+				token,
+			});
+			return data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [`task-${team_id}`] });
+		},
+		onError: (error) => {
+			toast({ title: error.message });
+		},
+	});
+	const [columns, setColumns] = useState<Column[]>(defaultCols);
+	const pickedUpTaskColumn = useRef<ColumnId | null>(null);
+	const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+	//   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+	const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
-  const [activeTask, setActiveTask] = useState<Task | null>(null);
+	const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: coordinateGetter,
-    })
-  );
+	const sensors = useSensors(
+		useSensor(MouseSensor),
+		useSensor(TouchSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: coordinateGetter,
+		})
+	);
 
-  function getDraggingTaskData(taskId: UniqueIdentifier, columnId: ColumnId) {
-    const tasksInColumn = data?.filter((task) => task.task_status === columnId)!;
-    const taskPosition = tasksInColumn.findIndex((task) => task.task_id === taskId);
-    const column = columns.find((col) => col.id === columnId);
-    return {
-      tasksInColumn,
-      taskPosition,
-      column,
-    };
-  }
+	function getDraggingTaskData(taskId: UniqueIdentifier, columnId: ColumnId) {
+		const tasksInColumn = data?.filter(
+			(task) => task.task_status === columnId
+		)!;
+		const taskPosition = tasksInColumn.findIndex(
+			(task) => task.task_id === taskId
+		);
+		const column = columns.find((col) => col.id === columnId);
+		return {
+			tasksInColumn,
+			taskPosition,
+			column,
+		};
+	}
 
-  const announcements: Announcements = {
-    onDragStart({ active }) {
-      if (!hasDraggableData(active)) return;
-      // if (active.data.current?.type === "Column") {
-      //   const startColumnIdx = columnsId.findIndex((id) => id === active.id);
-      //   const startColumn = columns[startColumnIdx];
-      //   return `Picked up Column ${startColumn?.title} at position: ${
-      //     startColumnIdx + 1
-      //   } of ${columnsId.length}`;
-      // } 
-      else if (active.data.current?.type === "Task") {
-        pickedUpTaskColumn.current = active.data.current.task.task_status;
-        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
-          active.id,
-          pickedUpTaskColumn.current
-        );
-        return `Picked up Task ${
-          active.data.current.task.task_desc
-        } at position: ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
-      }
-    },
-    onDragOver({ active, over }) {
-      if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+	const announcements: Announcements = {
+		onDragStart({ active }) {
+			if (!hasDraggableData(active)) return;
+			// if (active.data.current?.type === "Column") {
+			//   const startColumnIdx = columnsId.findIndex((id) => id === active.id);
+			//   const startColumn = columns[startColumnIdx];
+			//   return `Picked up Column ${startColumn?.title} at position: ${
+			//     startColumnIdx + 1
+			//   } of ${columnsId.length}`;
+			// }
+			else if (active.data.current?.type === "Task") {
+				pickedUpTaskColumn.current =
+					active.data.current.task.task_status;
+				const { tasksInColumn, taskPosition, column } =
+					getDraggingTaskData(active.id, pickedUpTaskColumn.current);
+				return `Picked up Task ${
+					active.data.current.task.task_desc
+				} at position: ${taskPosition + 1} of ${
+					tasksInColumn.length
+				} in column ${column?.title}`;
+			}
+		},
+		onDragOver({ active, over }) {
+			if (!hasDraggableData(active) || !hasDraggableData(over)) return;
 
-      if (
-        active.data.current?.type === "Column" &&
-        over.data.current?.type === "Column"
-      ) {
-        const overColumnIdx = columnsId.findIndex((id) => id === over.id);
-        return `Column ${active.data.current.column.title} was moved over ${
-          over.data.current.column.title
-        } at position ${overColumnIdx + 1} of ${columnsId.length}`;
-      } 
-      else if (
-        active.data.current?.type === "Task" &&
-        over.data.current?.type === "Task"
-      ) {
-        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
-          over.id,
-          over.data.current.task.task_status
-        );
-        if (over.data.current.task.task_status !== pickedUpTaskColumn.current) {
-          return `Task ${
-            active.data.current.task.task_desc
-          } was moved over column ${column?.title} in position ${
-            taskPosition + 1
-          } of ${tasksInColumn.length}`;
-        }
-        return `Task was moved over position ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
-      }
-    },
-    onDragEnd({ active, over }) {
-      if (!hasDraggableData(active) || !hasDraggableData(over)) {
-        pickedUpTaskColumn.current = null;
-        return;
-      }
-      if (
-        active.data.current?.type === "Column" &&
-        over.data.current?.type === "Column"
-      ) {
-        const overColumnPosition = columnsId.findIndex((id) => id === over.id);
+			if (
+				active.data.current?.type === "Column" &&
+				over.data.current?.type === "Column"
+			) {
+				const overColumnIdx = columnsId.findIndex(
+					(id) => id === over.id
+				);
+				return `Column ${
+					active.data.current.column.title
+				} was moved over ${
+					over.data.current.column.title
+				} at position ${overColumnIdx + 1} of ${columnsId.length}`;
+			} else if (
+				active.data.current?.type === "Task" &&
+				over.data.current?.type === "Task"
+			) {
+				const { tasksInColumn, taskPosition, column } =
+					getDraggingTaskData(
+						over.id,
+						over.data.current.task.task_status
+					);
+				if (
+					over.data.current.task.task_status !==
+					pickedUpTaskColumn.current
+				) {
+					return `Task ${
+						active.data.current.task.task_desc
+					} was moved over column ${column?.title} in position ${
+						taskPosition + 1
+					} of ${tasksInColumn.length}`;
+				}
+				return `Task was moved over position ${taskPosition + 1} of ${
+					tasksInColumn.length
+				} in column ${column?.title}`;
+			}
+		},
+		onDragEnd({ active, over }) {
+			if (!hasDraggableData(active) || !hasDraggableData(over)) {
+				pickedUpTaskColumn.current = null;
+				return;
+			}
+			if (
+				active.data.current?.type === "Column" &&
+				over.data.current?.type === "Column"
+			) {
+				const overColumnPosition = columnsId.findIndex(
+					(id) => id === over.id
+				);
 
-        return `Column ${
-          active.data.current.column.title
-        } was dropped into position ${overColumnPosition + 1} of ${
-          columnsId.length
-        }`;
-      }
-      else if (
-        active.data.current?.type === "Task" &&
-        over.data.current?.type === "Task"
-      ) {
-        const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
-          over.id,
-          over.data.current.task.task_status
-        );
-        //call api here maybe
-        
-        if (over.data.current.task.task_status !== pickedUpTaskColumn.current) {
+				return `Column ${
+					active.data.current.column.title
+				} was dropped into position ${overColumnPosition + 1} of ${
+					columnsId.length
+				}`;
+			} else if (
+				active.data.current?.type === "Task" &&
+				over.data.current?.type === "Task"
+			) {
+				const { tasksInColumn, taskPosition, column } =
+					getDraggingTaskData(
+						over.id,
+						over.data.current.task.task_status
+					);
+				//call api here maybe
 
-          return `Task was dropped into column ${column?.title} in position ${
-            taskPosition + 1
-          } of ${tasksInColumn.length}`;
-        }
-        console.log("change pos")
-        
-        return `Task was dropped into position ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
-      }
-      
-      pickedUpTaskColumn.current = null;
-    },
-    onDragCancel({ active }) {
-      pickedUpTaskColumn.current = null;
-      if (!hasDraggableData(active)) return;
-      return `Dragging ${active.data.current?.type} cancelled.`;
-    },
-  };
+				if (
+					over.data.current.task.task_status !==
+					pickedUpTaskColumn.current
+				) {
+					return `Task was dropped into column ${
+						column?.title
+					} in position ${taskPosition + 1} of ${
+						tasksInColumn.length
+					}`;
+				}
 
-  return (
-    <DndContext
-    id={"kanban-board"}
-      accessibility={{
-        announcements,
-      }}
-      sensors={sensors}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-    >
-      <BoardContainer>
-        <SortableContext items={columnsId}>
-          {data&& columns.map((col) => (
-            <BoardColumn
-              key={col.id}
-              column={col}
-              tasks={data.filter((task) => task.task_status === col.id)}
-              // addTask={}
-              member={member}
-              token={token}
-              team_id={team_id}
-            />
-          ))}
-         
-        </SortableContext>
-      </BoardContainer>
+				return `Task was dropped into position ${taskPosition + 1} of ${
+					tasksInColumn.length
+				} in column ${column?.title}`;
+			}
 
-      {typeof window !== 'undefined' &&"document" in window &&
-        createPortal(
-          <DragOverlay>
-            {data && activeColumn && (
-                <>
-              <BoardColumn
-                isOverlay
-                column={activeColumn}
-                // addTask={addTask}
-                token={token}
-                member={member}
-                team_id={team_id}
-                tasks={data.filter(
-                    (task) => task.task_status === activeColumn.id
-                    )}
-                    />
-             
-                    </>
-            )}
-            {activeTask && <TaskCard task={activeTask} token={token} team_id={team_id} isOverlay />}
-          </DragOverlay>,
-          document.body
-        )}
-    </DndContext>
-  );
+			pickedUpTaskColumn.current = null;
+		},
+		onDragCancel({ active }) {
+			pickedUpTaskColumn.current = null;
+			if (!hasDraggableData(active)) return;
+			return `Dragging ${active.data.current?.type} cancelled.`;
+		},
+	};
 
-  function onDragStart(event: DragStartEvent) {
-    if (!hasDraggableData(event.active)) return;
-    const data = event.active.data.current;
-    if (data?.type === "Column") {
-      setActiveColumn(data.column);
-      return;
-    }
+	return (
+		<DndContext
+			id={"kanban-board"}
+			accessibility={{
+				announcements,
+			}}
+			sensors={sensors}
+			onDragStart={onDragStart}
+			onDragEnd={onDragEnd}
+			onDragOver={onDragOver}
+		>
+			<BoardContainer>
+				<SortableContext items={columnsId}>
+					{data &&
+						columns.map((col) => (
+							<BoardColumn
+								key={col.id}
+								column={col}
+								tasks={data.filter(
+									(task) => task.task_status === col.id
+								)}
+								// addTask={}
+								member={member}
+								token={token}
+								team_id={team_id}
+							/>
+						))}
+				</SortableContext>
+			</BoardContainer>
 
-    if (data?.type === "Task") {
-      setActiveTask(data.task);
-      return;
-    }
-  }
+			{typeof window !== "undefined" &&
+				"document" in window &&
+				createPortal(
+					<DragOverlay>
+						{data && activeColumn && (
+							<>
+								<BoardColumn
+									isOverlay
+									column={activeColumn}
+									// addTask={addTask}
+									token={token}
+									member={member}
+									team_id={team_id}
+									tasks={data.filter(
+										(task) =>
+											task.task_status === activeColumn.id
+									)}
+								/>
+							</>
+						)}
+						{activeTask && (
+							<TaskCard
+								task={activeTask}
+								token={token}
+								team_id={team_id}
+								isOverlay
+							/>
+						)}
+					</DragOverlay>,
+					document.body
+				)}
+		</DndContext>
+	);
 
-  function onDragEnd(event: DragEndEvent) {
-    // console.log(activeColumn, activeTask, 'araiwa')
-    if(isOwner){
-    mutation.mutate({task_id : activeTask?.task_id as string, status : activeTask?.task_status ? activeTask.task_status : activeColumn?.id as ColumnId})
-    }
-    setActiveColumn(null);
-    setActiveTask(null);
+	function onDragStart(event: DragStartEvent) {
+		if (!hasDraggableData(event.active)) return;
+		const data = event.active.data.current;
+		if (data?.type === "Column") {
+			setActiveColumn(data.column);
+			return;
+		}
 
-    const { active, over } = event;
-    if (!over) return;
+		if (data?.type === "Task") {
+			setActiveTask(data.task);
+			return;
+		}
+	}
 
-    const activeId = active.id;
-    const overId = over.id;
+	function onDragEnd(event: DragEndEvent) {
+		if (isOwner || isAllow) {
+			mutation.mutate({
+				task_id: activeTask?.task_id as string,
+				status: activeTask?.task_status
+					? activeTask.task_status
+					: (activeColumn?.id as ColumnId),
+			});
+		}
+		setActiveColumn(null);
+		setActiveTask(null);
 
-    if (!hasDraggableData(active)) return;
+		const { active, over } = event;
+		if (!over) return;
 
-    const activeData = active.data.current;
+		const activeId = active.id;
+		const overId = over.id;
 
-    if (activeId === overId) return;
+		if (!hasDraggableData(active)) return;
 
-    const isActiveAColumn = activeData?.type === "Column";
-    if (!isActiveAColumn) return;
+		const activeData = active.data.current;
 
-    setColumns((columns) => {
-      const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+		if (activeId === overId) return;
 
-      const overColumnIndex = columns.findIndex((col) => col.id === overId);
-      console.log(activeColumnIndex, overColumnIndex, 'araiwa')
-      return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    });
-  }
+		const isActiveAColumn = activeData?.type === "Column";
+		if (!isActiveAColumn) return;
 
-  function onDragOver(event: DragOverEvent) {
-    const { active, over } = event;
-    if (!over) return;
+		setColumns((columns) => {
+			const activeColumnIndex = columns.findIndex(
+				(col) => col.id === activeId
+			);
 
-    const activeId = active.id;
-    const overId = over.id;
+			const overColumnIndex = columns.findIndex(
+				(col) => col.id === overId
+			);
+			return arrayMove(columns, activeColumnIndex, overColumnIndex);
+		});
+	}
 
-    if (activeId === overId) return;
+	function onDragOver(event: DragOverEvent) {
+		const { active, over } = event;
+		if (!over) return;
 
-    if (!hasDraggableData(active) || !hasDraggableData(over)) return;
+		const activeId = active.id;
+		const overId = over.id;
 
-    const activeData = active.data.current;
-    const overData = over.data.current;
+		if (activeId === overId) return;
 
-    const isActiveATask = activeData?.type === "Task";
-    const isOverATask = activeData?.type === "Task";
+		if (!hasDraggableData(active) || !hasDraggableData(over)) return;
 
-    if (!isActiveATask) return;
+		const activeData = active.data.current;
+		const overData = over.data.current;
 
-    function changePrior(task : Task[]) {
-        const activeIndex = task.findIndex((t) => t.task_id === activeId);
-        const overIndex = task.findIndex((t) => t.task_id === overId);
-        const activeTask = task[activeIndex];
-        const overTask = task[overIndex];
-        if (
-          activeTask &&
-          overTask &&
-          activeTask.task_status !== overTask.task_status
-        ) {
-          activeTask.task_status = overTask.task_status;
-          return arrayMove(task, activeIndex, overIndex - 1);
-        }
-        return arrayMove(task, activeIndex, overIndex);
-    }
-    // Im dropping a Task over another Task
-    //call api here
-    if (isActiveATask && isOverATask) {
-      console.log('araiwa')
-      if(isOwner){
-      changePrior(data!)
-      }
-      // console.log(tasks)
-        // setTasks(changePrior(tasks))
-    //  setTasks((tasks : Task[]) => {
-    //     const activeIndex = tasks.findIndex((t) => t.id === activeId);
-    //     const overIndex = tasks.findIndex((t) => t.id === overId);
-    //     const activeTask = tasks[activeIndex];
-    //     const overTask = tasks[overIndex];
-    //     if (
-    //       activeTask &&
-    //       overTask &&
-    //       activeTask.columnId !== overTask.columnId
-    //     ) {
-    //       activeTask.columnId = overTask.columnId;
-    //       return arrayMove(tasks, activeIndex, overIndex - 1);
-    //     }
+		const isActiveATask = activeData?.type === "Task";
+		const isOverATask = activeData?.type === "Task";
 
-    //     return arrayMove(tasks, activeIndex, overIndex);
-    //   });
-    }
+		if (!isActiveATask) return;
 
-    const isOverAColumn = overData?.type === "Column";
-    function changeColumn(task : Task[]) {
-        const activeIndex = task.findIndex((t) => t.task_id === activeId);
-        const activeTask = task[activeIndex];
-        if (activeTask) {
-          activeTask.task_status = overId as ColumnId;
-          console.log(activeTask.task_status, activeTask.task_id)
-          // mutation.mutate({task_id : activeTask.task_id as string, status : activeTask.task_status})
-          return arrayMove(task, activeIndex, activeIndex);
-        }
-        return task;
-    }
-    //call api here
-    // Im dropping a Task over a column
-    if (isActiveATask && isOverAColumn) {
-      if(isOwner){
-      changeColumn(data!)
-      }
-        // setTasks(changeColumn(tasks))
-    }
-  }
+		function changePrior(task: Task[]) {
+			const activeIndex = task.findIndex((t) => t.task_id === activeId);
+			const overIndex = task.findIndex((t) => t.task_id === overId);
+			const activeTask = task[activeIndex];
+			const overTask = task[overIndex];
+			if (
+				activeTask &&
+				overTask &&
+				activeTask.task_status !== overTask.task_status
+			) {
+				activeTask.task_status = overTask.task_status;
+				return arrayMove(task, activeIndex, overIndex - 1);
+			}
+			return arrayMove(task, activeIndex, overIndex);
+		}
+		// Im dropping a Task over another Task
+		//call api here
+		if (isActiveATask && isOverATask) {
+			if (isOwner || isAllow) {
+				changePrior(data!);
+			}
+			// setTasks(changePrior(tasks))
+			//  setTasks((tasks : Task[]) => {
+			//     const activeIndex = tasks.findIndex((t) => t.id === activeId);
+			//     const overIndex = tasks.findIndex((t) => t.id === overId);
+			//     const activeTask = tasks[activeIndex];
+			//     const overTask = tasks[overIndex];
+			//     if (
+			//       activeTask &&
+			//       overTask &&
+			//       activeTask.columnId !== overTask.columnId
+			//     ) {
+			//       activeTask.columnId = overTask.columnId;
+			//       return arrayMove(tasks, activeIndex, overIndex - 1);
+			//     }
+
+			//     return arrayMove(tasks, activeIndex, overIndex);
+			//   });
+		}
+
+		const isOverAColumn = overData?.type === "Column";
+		function changeColumn(task: Task[]) {
+			const activeIndex = task.findIndex((t) => t.task_id === activeId);
+			const activeTask = task[activeIndex];
+			if (activeTask) {
+				activeTask.task_status = overId as ColumnId;
+				return arrayMove(task, activeIndex, activeIndex);
+			}
+			return task;
+		}
+		//call api here
+		// Im dropping a Task over a column
+		if (isActiveATask && isOverAColumn) {
+			if (isOwner || isAllow) {
+				changeColumn(data!);
+			}
+			// setTasks(changeColumn(tasks))
+		}
+	}
 }

@@ -38,7 +38,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import { Input } from "../ui/input";
 import { Calendar } from "../ui/calendar";
 import { Task } from "./TaskCard";
@@ -48,7 +48,7 @@ import { useMutation , useQuery, useQueryClient} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { IFormattedErrorResponse } from "@/type/type";
 import { deleteTask, updateTask } from "@/api-caller/task"
-import { TeamRequest } from "@/type/team";
+import { GetTeamType, TeamRequest } from "@/type/team";
 import { getmemberByTeamId } from "@/api-caller/team";
 import { MemberUser } from "@/type/user";
 const status = [
@@ -79,6 +79,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 			return await getmemberByTeamId({token, team_id});
 		},
 	});
+	const {toast} = useToast()
 	const form = useForm<z.infer<typeof TaskSchema>>({
 		resolver: zodResolver(TaskSchema),
 		defaultValues: {
@@ -90,7 +91,9 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 		},
 	});
 	const queryClient = useQueryClient()
-	const mutation = useMutation<any,AxiosError<IFormattedErrorResponse>,FormData>({
+	const team = queryClient.getQueryData<GetTeamType>([`team-${team_id}`]);
+	const isAllow = team?.allow_task || team?.user_role === "OWNER";
+	const mutation = useMutation<any,IFormattedErrorResponse,FormData>({
 		mutationFn : async (formData) => {
 		  const {data} = await updateTask({token,team_id,task_id : task.task_id as string,formData});
 		  return data;
@@ -100,25 +103,15 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 		queryClient.invalidateQueries({queryKey : [`task-${team_id}`]})
 	},
 	onError : (error) => {
-	console.log(error.response?.data.message)
+		toast({title : error.message})
 	}
 	  })
 
 	function onSubmit(data: z.infer<typeof TaskSchema>) {
-		console.log(data);
 		const formData = new FormData();
-		console.log(form.getFieldState("status").isDirty)
 		const date = data?.dueDate?.toLocaleDateString('en-US', { year: "numeric", month: "2-digit", day: "2-digit" }).split('/')
 		// if (form.getFieldState("title").isDirty || form.getFieldState("status").isDirty || form.getFieldState("description").isDirty || form.getFieldState("assignee").isDirty || form.getFieldState("dueDate").isDirty ){
 			const task_id = task.task_id;
-			const taskdata: Task = {
-				task_id: task_id,
-				task_name: data.title,
-				task_desc: data.description,
-				task_status: data.status as "TODO" | "DOING" | "DONE",
-				user_id: data.assignee || "",
-				task_deadline: data.dueDate !== undefined && date ?  `${date[2]}-${date[0]}-${date[1]}` : "",
-			};
 			formData.append("task_id", task_id as string);
 			formData.append("task_name", data.title);
 			formData.append("task_desc", data.description || "");
@@ -126,17 +119,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 			formData.append("user_id", data.assignee || "");
 			formData.append("task_deadline", data.dueDate !== undefined && date ?  `${date[2]}-${date[0]}-${date[1]}` : "");
 			mutation.mutate(formData)
-			// updateTask(taskdata);
-			toast({
-				title: "You submitted the following values:",
-				description: (
-					<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-						<code className="text-white">
-							{JSON.stringify(data, null, 2)}
-						</code>
-					</pre>
-				),
-			});
+			
 		// }
     // else if(!form.formState.isDirty){
     //   toast({
@@ -145,23 +128,26 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
     //   });
     // }
   }
+  console.log(isAllow)
 	return (
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
 				className="space-y-6 p-5"
 			>
+				{!isAllow && <p>FFF</p>}
 				<FormField
 					control={form.control}
 					name="title"
 					render={({ field }) => (
 						<FormItem className="flex flex-col">
-							<FormLabel>Title{task.user_id}</FormLabel>
+							<FormLabel>Title</FormLabel>
 							<FormControl>
 								<Input
 									{...field}
-									className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white"
+									className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white disabled:text-black disabled:opacity-100"
 									placeholder="Enter title"
+									disabled={!isAllow}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -177,8 +163,9 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 							<FormControl>
 								<Textarea
 									{...field}
-									className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white"
-									placeholder="Enter title"
+									className="border-0 hover:bg-slate-200 ring-0 focus:ring-1 focus:ring-red-900 focus:bg-white  disabled:opacity-100"
+									placeholder="Enter Description for task"
+									disabled={!isAllow}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -192,7 +179,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 						<FormItem className="flex flex-col">
 							<FormLabel>Status</FormLabel>
 							<Popover>
-								<PopoverTrigger asChild>
+								<PopoverTrigger disabled={!isAllow} asChild>
 									<FormControl>
 										<Button
 											variant="outline"
@@ -259,7 +246,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 						<FormItem className="flex flex-col">
 							<FormLabel>Due Date</FormLabel>
 							<Popover>
-								<PopoverTrigger asChild>
+								<PopoverTrigger disabled={!isAllow} asChild>
 									<FormControl>
 										<Button
 											variant={"outline"}
@@ -268,6 +255,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 												!field.value &&
 													"text-muted-foreground"
 											)}
+											
 										>
 											{field.value != undefined ? (
 												format(field.value, "PPP")
@@ -305,7 +293,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 						<FormItem className="flex flex-col">
 							<FormLabel>Assignee</FormLabel>
 							<Popover>
-								<PopoverTrigger asChild>
+								<PopoverTrigger disabled={!isAllow	} asChild>
 									<FormControl>
 										<Button
 											variant="outline"
@@ -315,6 +303,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 												!field.value &&
 													"text-muted-foreground"
 											)}
+											disabled={!isAllow}
 										>
 											{field.value
 												? members!.find(
@@ -340,7 +329,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 													key={state.member_id}
 													onSelect={() => {
 														form.setValue(
-															"assignee",
+																"assignee",
 															state.user_id
 														);
 													}}
@@ -365,10 +354,10 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 						</FormItem>
 					)}
 				/>
-				<Button type="submit" className="me-4">
+				{isAllow  && <Button type="submit" className="me-4">
 					Edit
-				</Button>
-				<Dialog>
+				</Button>}
+				{isAllow  &&<Dialog>
 					<DialogTrigger asChild>
 						<Button variant={"destructive"}>Delete</Button>
 					</DialogTrigger>
@@ -393,7 +382,7 @@ export function TaskDetail({task,team_id, token}: KanbanformProps & TeamRequest)
 							</DialogClose>
 						</DialogFooter>
 					</DialogContent>
-				</Dialog>
+				</Dialog>}
 			</form>
 		</Form>
 	);
