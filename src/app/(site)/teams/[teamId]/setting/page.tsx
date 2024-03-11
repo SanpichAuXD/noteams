@@ -33,7 +33,14 @@ type Props = {};
 
 const SettingPage = async({ params }: { params: { teamId: string } }) => {
 	const token = cookies().get("accessToken")?.value!;
-	const data = await getTeamSetting({token, team_id:params.teamId});
+	let data;
+	try{
+		data = await getTeamSetting({token, team_id:params.teamId});
+	}catch(error){
+		return <div className="flex p-10 ">
+			<p className="text-red-600 text-4xl"> No Permission to Access</p>
+			</div>
+	}
 	
 	return (
 		<div className="w-[90%] p-20">
