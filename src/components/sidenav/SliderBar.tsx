@@ -83,10 +83,11 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 						<Image
 							className={`${
 								!sidebarExpanded ? "lg:hidden" : "block"
-							} mt-1 mb-8 h-8 w-8`}
-							src="/Noteams.png"
+							} mt-1 mb-8 h-7 w-14`}
+							src="/Noteams-tiny.png"
 							height={100}
 							width={100}
+							sizes={"100vw"}
 							alt="logo"
 						/>
 					</Link>
