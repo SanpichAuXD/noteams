@@ -25,11 +25,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 						access.value,
 						refresh.value
 					);
-					console.log(data, "data");
 					const response = NextResponse.next();
-					console.log(data);
+					(data);
 					if (!isResponseError(data)) {
-						console.log(data);
 						response.cookies.set({
 							name: "accessToken",
 							value: data.token.access_token,
@@ -68,15 +66,15 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 						return response;
 					}
 		// 		if (noauthpath.includes(request.nextUrl.pathname)) {
-		// 			console.log("middleware go to teams");
+		// 			("middleware go to teams");
 		// 			return NextResponse.redirect(new URL("/teams", request.nextUrl));
 				
 
 		// 		// return NextResponse.next();
 			
-		// 		console.log(error);
+		// 		(error);
 		// 	}
-		// 		// if (error.name === "JWTExpired") console.log("xd");
+		// 		// if (error.name === "JWTExpired") ("xd");
 				
 		// 		// const response = NextResponse.redirect(
 		// 		// 	new URL("/signin", request.url)
@@ -89,20 +87,20 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 			}
 		
 		// else if (!access){
-		// 	console.log('should redirect')
+		// 	('should redirect')
 		// 	const response = NextResponse.redirect(new URL("/signin", request.url));
 		// 	response.cookies.delete("refreshToken");
 		// 	return response;
 		}
 		// if (noauthpath.includes(request.nextUrl.pathname)) {
-		// 	console.log("middleware go to teams");
+		// 	("middleware go to teams");
 		// 	return NextResponse.redirect(new URL("/teams", request.nextUrl));
 		// }
 		// if (request.nextUrl.pathname === "/signout") {
-		// 	console.log("middleware go to teams");
+		// 	("middleware go to teams");
 		// 	const signout = await fetch('api/signout')
-		// 	// console.log(request.cookies.getAll(), 'signout');
-		// 	console.log(signout)
+		// 	// (request.cookies.getAll(), 'signout');
+		// 	(signout)
 		// 	const response = NextResponse.next();
 		// 	response.cookies.delete("accessToken");
 		// 	response.cookies.delete("refreshToken");
@@ -112,15 +110,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 		// }
 	}
 
-	if(access && noauthpath.includes(request.nextUrl.pathname)){
-		console.log("middleware go to teams");
-		return NextResponse.redirect(new URL("/teams", request.nextUrl));
-	}
 	if (!access && !noauthpath.includes(request.nextUrl.pathname)) {
-		console.log("middleware go to signin");
 		return NextResponse.redirect(new URL("/signin", request.nextUrl));
 	}
-	console.log("middleware end ");
+	// if(access && noauthpath.includes(request.nextUrl.pathname)){
+	// 	return NextResponse.redirect(new URL("/teams", request.nextUrl));
+	// }
 	return NextResponse.next();
 }
 

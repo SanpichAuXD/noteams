@@ -9,6 +9,9 @@ import WithoutAuth from "@/components/ui/WithoutAuth";
 import { redirect } from "next/navigation";
 
 function SigninPage(props: Props) {
+	if(cookies().get("accessToken")){
+		redirect('/teams')
+	}
 	async function setCookie(data: SignInResponse) {
 		"use server";
 		cookies().set({
