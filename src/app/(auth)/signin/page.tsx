@@ -6,6 +6,7 @@ import SignIn from "@/components/auth/SignIn";
 import { cookies } from "next/headers";
 import { SignInResponse } from "@/type/user";
 import WithoutAuth from "@/components/ui/WithoutAuth";
+import { redirect } from "next/navigation";
 
 function SigninPage(props: Props) {
 	async function setCookie(data: SignInResponse) {
@@ -42,6 +43,7 @@ function SigninPage(props: Props) {
 			// keep the cookie for a week
 			maxAge: 60 * 60 * 24 * 1,
 		})
+		redirect('/teams')
 		
 	}
 	return (
@@ -60,4 +62,4 @@ function SigninPage(props: Props) {
 }
 
 
-export default WithoutAuth(SigninPage)
+export default (SigninPage)

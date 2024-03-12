@@ -101,6 +101,7 @@ const SignUp = (props: Props) => {
         title:"Signup Successfull",
         variant : "success"
       })
+      router.push("/signin")
     }catch(e){
       if(isResponseError(e)){
         toast({title : e.message, variant : "destructive"})
