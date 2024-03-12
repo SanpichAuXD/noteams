@@ -18,15 +18,13 @@ import Image from 'next/image'
   return (
     <main className="mx-4 flex flex-col gap-6 p-5">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-              Drag and Drop Kanban Board 
+            Kanban Board 
             </h1>
             <HydrationBoundary state={dehydrate(queryClient)}> 
             <KanbanBoard token={token} team_id={params.teamId} member={member}/> 
              </HydrationBoundary>
               {/* <KanbanBoard token={cookie} teamId={params.teamId} /> */}
-            <p className="leading-7 [&:not(:first-child)]:mt-6">
-              With Keyboard Controls and Screen Reader interactions.
-            </p>
+           
           </main>
   )
 }

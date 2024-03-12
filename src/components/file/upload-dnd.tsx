@@ -26,7 +26,9 @@ const UploadDnd = (
 		queryFn: async () => await getFiles({ token: token, team_id:team_id }),
 		
 	});
-	console.log(data, 'hydrate file')
+	data?.map((file) => {
+		file.created_at = new Date(file.created_at).toLocaleString();
+	});
 	const [dragActive, setDragActive] = useState<boolean>(false);
 	const inputRef = useRef<any>(null);
 	const [files1, setFiles] = useState<any>([]);
@@ -37,9 +39,7 @@ const UploadDnd = (
 	const role = 'member'
 	function handleChange(e: any) {
 		e.preventDefault();
-		console.log("File has been added");
 		if (e.target.files && e.target.files[0]) {
-			console.log(e.target.files);
 			for (let i = 0; i < e.target.files["length"]; i++) {
 				setFiles((prevState: any) => [...prevState, e.target.files[i]]);
 			}
@@ -53,10 +53,10 @@ const UploadDnd = (
 			return await uploadFile({token:token, team_id:team_id, formData});
 		},
 		onSuccess: () => {
-			console.log("success");
 			queryClient.invalidateQueries({ queryKey: [`hydrate-file-${team_id}`] });
 		},
 		onError: (error) => {
+			console.log(error)
 			toast({title : error.message, variant : 'destructive'})
 		},
 	});
@@ -66,12 +66,11 @@ const UploadDnd = (
 		e.stopPropagation();
 		setDragActive(false);
 		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-			console.log("file drop")
 			const formData = new FormData()
 			for (let i = 0; i < e.dataTransfer.files["length"]; i++) {
 				formData.append('files', e.dataTransfer.files[i])
 				
-                toast({title : `File ${e.dataTransfer.files[i].name} has uploading`})
+                // toast({title : `File ${e.dataTransfer.files[i].name} has uploading`})
 			}
 			mutation.mutate(formData)
 			// console.log([...data, ...files]);
@@ -118,6 +117,7 @@ const UploadDnd = (
 					multiple={true}
 					onChange={handleChange}
 					accept="image/*,.pdf"
+					disabled
 				/>
 
 				{/* <p>
