@@ -1,41 +1,48 @@
 "use client";
-import React from 'react'
-import Image from 'next/image'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import Link from 'next/link';
-import { SearchUserInput } from './SearchUserInput';
-import { useTeam } from '@/store/TeamState';
-import { useQueryClient } from '@tanstack/react-query';
-import { GetTeamType } from '@/type/team';
+import React from "react";
+import Image from "next/image";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "../ui/dialog";
+import Link from "next/link";
+import { SearchUserInput } from "./SearchUserInput";
+import { useTeam } from "@/store/TeamState";
+import { useQueryClient } from "@tanstack/react-query";
+import { GetTeamType } from "@/type/team";
 type Props = {
-    team_id : string;
-    token : string;
-}
+	team_id: string;
+	token: string;
+};
 
-const TeamNav = ({team_id,token}: Props) => {
+const TeamNav = ({ team_id, token }: Props) => {
 	const client = useQueryClient();
-    const {data} = useTeam(token,team_id);
+	const { data } = useTeam(token, team_id);
 	const team = client.getQueryData<GetTeamType>([`team-${team_id}`]);
-	client.invalidateQueries({queryKey : [`team-${team_id}`]})
+	const isAllow = team?.allow_task || team?.user_role === "OWNER";
+	client.invalidateQueries({ queryKey: [`team-${team_id}`] });
 	const searching = async (value: string) => {
-		
 		try {
-		  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/find?username=&email=${value}`, {
-			
-		  headers: {
-			"Authorization": `Bearer ${token}`
-		  }
-		  });
-		  return await res.json();
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/users/find?username=&email=${value}`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+			return await res.json();
 		} catch (error) {
-		  console.error("Error fetching user data:", error);
-		  throw error;
+			console.error("Error fetching user data:", error);
+			throw error;
 		}
-		
-	}
-  return (
-    <div >
-        <div className="flex justify-between items-center px-6">
+	};
+	return (
+		<div>
+			<div className="flex justify-between items-center px-6">
 				<div className="flex flex-row items-center p-3">
 					<Image
 						src={data?.team_poster || "/reg-vector.svg"}
@@ -48,15 +55,21 @@ const TeamNav = ({team_id,token}: Props) => {
 					<p className="text-xl font-bold">{data?.team_name}</p>
 				</div>
 				<Dialog>
-					<DialogTrigger className="bg-black text-white px-5 py-2 text-lg rounded font-semibold">
-						Invite
-					</DialogTrigger>
+					{isAllow && (
+						<DialogTrigger className="bg-black text-white px-5 py-2 text-lg rounded font-semibold">
+							Invite
+						</DialogTrigger>
+					)}
 					<DialogContent className="w-[40%] max-w-[40%]">
 						<DialogHeader>
 							<DialogTitle className="pb-5">
 								Invite people in your team
 							</DialogTitle>
-							<SearchUserInput token={token} searchfn={searching} team_id={team_id}/>
+							<SearchUserInput
+								token={token}
+								searchfn={searching}
+								team_id={team_id}
+							/>
 						</DialogHeader>
 					</DialogContent>
 				</Dialog>
@@ -75,25 +88,30 @@ const TeamNav = ({team_id,token}: Props) => {
 					>
 						Board
 					</Link>
-					{team?.user_role === "OWNER" && <Link
-						href={`/teams/${team_id}/setting`}
-						className="teams-nav-link"
-					>
-						Setting
-					</Link>}
+					{team?.user_role === "OWNER" && (
+						<Link
+							href={`/teams/${team_id}/setting`}
+							className="teams-nav-link"
+						>
+							Setting
+						</Link>
+					)}
 					<Link
 						href={`/teams/${team_id}/`}
 						className="teams-nav-link"
 					>
 						About
 					</Link>
-					<Link href={`/teams/${team_id}/member`} className="teams-nav-link">
+					<Link
+						href={`/teams/${team_id}/member`}
+						className="teams-nav-link"
+					>
 						Member
 					</Link>
 				</ul>
 			</nav>
-    </div>
-  )
-}
+		</div>
+	);
+};
 
-export default TeamNav
+export default TeamNav;

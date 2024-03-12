@@ -59,6 +59,7 @@ export function DataTable<TData, TValue>({
 	const client = useQueryClient();
 	const {toast} = useToast();
 	const team = client.getQueryData<GetTeamType>([`team-${team_id}`]);
+	const isAllow = team?.user_role === "OWNER" || team?.allow_file
 	// console.log(tea)
 	const mutation = useMutation<string,IFormattedErrorResponse, string>({
 		mutationFn: async (id) => {
@@ -67,11 +68,9 @@ export function DataTable<TData, TValue>({
 			return await deleteFile({token,team_id,formData});
 		},
 		onSuccess: () => {
-			console.log("success");
 			client.invalidateQueries({ queryKey: [`hydrate-file-${team_id}`] });
 		},
 		onError: (error) => {
-			console.log(error);
 			toast({title : error.message})
 		},
 	});
@@ -114,7 +113,7 @@ export function DataTable<TData, TValue>({
 					}
 					className="w-[30%]"
 				/>
-				<UploadButton token={token} team_id={team_id} />
+				{isAllow && <UploadButton token={token} team_id={team_id} />}
 			</div>
 			<div className="rounded-md ">
 				<Table>

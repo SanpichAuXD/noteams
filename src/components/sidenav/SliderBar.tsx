@@ -130,7 +130,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
             // //   setSidebarOpen={setSidebarOpen}
               sidebarExpanded={sidebarExpanded}
 			  callApi={async()=> {
-					const response = await fetch('api/signout',{
+					const response = await fetch('/api/signout',{
 						method : 'POST',
 										
 					})

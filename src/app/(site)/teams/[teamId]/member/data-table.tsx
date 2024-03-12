@@ -66,11 +66,9 @@ export function MemberTable<TData, TValue>({
             return data;
         },
         onSuccess : () => {
-            console.log('success')
             queryClient.invalidateQueries({queryKey : [`member-${team_id}`]})
         },
 		onError : (error) => {
-			console.log(error)
 			toast({title : error.message})
 		}
         
@@ -156,15 +154,14 @@ export function MemberTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
-									<TableCell>
+									{isOwner && <TableCell>
 										<Button onClick={()=>{
-											console.log((row.original as MemberUser).member_id)
 											mutation.mutate((row.original as MemberUser).member_id)
 										}}>
 											<X />
 											<p>Remove</p>
 										</Button>
-									</TableCell>
+									</TableCell>}
 								</TableRow>
 							))
 						) : (
