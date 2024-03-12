@@ -63,6 +63,8 @@ const ProfileEdit = ({
 }: Profile1 & { token: string }) => {
   console.log("another ", user_id);
 
+  const [image, setImage] = useState("");
+
   const router = useRouter();
 
   const { toast } = useToast();
@@ -82,6 +84,7 @@ const ProfileEdit = ({
   ) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
+      setImage(URL.createObjectURL(selectedFile));
       console.log(selectedFile);
       //   // Handle the selected file (e.g., upload to server)
       const formData1 = new FormData();
@@ -121,40 +124,48 @@ const ProfileEdit = ({
     const timeoutId = setTimeout(() => {
       // Your logic here
       router.refresh();
-      console.log('Timeout completed after route change');
+      console.log("Timeout completed after route change");
     }, 1);
 
-  //   router.refresh();
-    router.push('/profile');
+    //   router.refresh();
+    router.push("/profile");
   }
+
   return (
     <div className="flex justify-center">
       <div className="mt-10">
         <div className="items-center">
-          <p className="text-3xl font-bold text-center ">Signup</p>
+          <p className="text-3xl font-bold text-center ">Edit Profile</p>
         </div>
-        <div className="grid grid-cols-2 bg-slate-400 mt-10 rounded-3xl">
+        <div className="grid grid-cols-2 mt-10 rounded-3xl border-4 border-gray-700">
           <div>
-            <div className="m-10 p-10">
+            <div className="m-10 p-10 ">
               <Image
                 className="md:h-[20rem] md:w-[20rem] sm:h-[24rem] sm:w-[24rem] border-2 rounded-3xl bg-white p-5"
                 width={50}
                 height={50}
-                src={avatar !== "" ? avatar : "/profile1.png"}
+                src={image !== "" ? image : "/profile1.png"}
                 alt="Picture of the Profile"
               />
+              {/* <button >Upload</button> */}
               <input
-                className="mt-5 "
+                placeholder="fileInput"
+                id="custom-input"
+                className="mt-5"
                 type="file"
                 accept=".jpg, .png, .jpeg"
                 onChange={handleFileSelected}
+                hidden
               />
+              <label
+                htmlFor="custom-input"
+                className="block text-sm text-slate-300 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-slate-800 hover:bg-slate-300 hover:text-slate-800 cursor-pointer text-center mt-5"
+              >
+                Choose file
+              </label>
             </div>
           </div>
           <div className="flex justify-center items-center">
-            <div className=" border-2 border-gray-600">
-
-            </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -214,13 +225,11 @@ const ProfileEdit = ({
                   />
                 </div>
                 {/* flex gap-2 relative pt-28 */}
-                <div className="mt-5">
-
-                </div>
-                <Button type="submit">Submit</Button>
+                <div className="mt-5"></div>
                 <Link href={"/profile"}>
-                <Button>Cancel</Button>
+                  <Button>Cancel</Button>
                 </Link>
+                <Button type="submit">Submit</Button>
                 {/* <Link s>
                 <button>Go</button>
             </Link> */}

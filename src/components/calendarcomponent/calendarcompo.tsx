@@ -94,7 +94,7 @@ function CalendarC({teams} : ChildComponentProps) {
 
   return (
     <>
-      <div className=" bg-[#FFF7F1] p-10 rounded-md">
+      <div className=" border-4 border-gray-700 p-10 rounded-md">
         <FullCalendar
           height={520}
           plugins={[dayGridPlugin]}

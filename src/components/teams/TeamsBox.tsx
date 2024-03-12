@@ -63,7 +63,8 @@ const TeamsBox = ({ id, image, title,token }: TeamsBoxProps & {token:string}) =>
 			href={`teams/${id}`}
 			>
 			<Image
-				src={team.team_poster}
+				src={team.team_poster !== "" ? team.team_poster : "/team_logo.png"}
+				// src={team.team_poster}
 				alt="reg-vector"
 				width={0}
 				height={0}
