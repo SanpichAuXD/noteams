@@ -94,7 +94,7 @@ const Profile: React.FC<Profileandteam> = ({ pData1, pTeam }) => (
       </div>
     </div>
 
-    {/* <p className="text-5xl font-bold ">Organize</p> */}
+    <p className="text-2xl font-bold ml-28">Organization (Team) </p>
     <div className="flex justify-center">
       <p className="mt-1 h-1 w-5/6 bg-black"></p>
     </div>
