@@ -8,24 +8,18 @@ import { IFormattedErrorResponse } from "@/type/type";
 export async function getTeams(token:string) : Promise<GetTeamsType[]
 // | IFormattedErrorResponse
 >{
-    console.log(document.cookie,"from api caller")
-    console.log('running get all team')
     // const cookie = formatCookie(document.cookie)
     const cookie = getCookieByName("user")
     const {user_id} = (destr<SignupRequest>(formatCookie(cookie)))
-    console.log(user_id,"cookie from api caller")
-    console.log(cookie,"from api caller")
     try{
         const {data} = await getInstance().get(`/users/teams/${user_id}`, {
             headers:{
                 "Authorization" : `Bearer ${token}`
             }
         });
-        console.log(data,"from api caller")
         return data
     }
     catch(error){
-        console.log(error)
         throw formattedError(error)
     }
 }
@@ -206,7 +200,7 @@ export const updateCodeTeam = async ({token,team_id, team_code} : TeamRequest & 
 export const LeaveTeam = async ({token , team_id } : TeamRequest) => {
     try{
 
-        const {data} = await getInstance().put(`/teams/exit/${team_id}`, {
+        const {data} = await getInstance().delete(`/teams/exit/${team_id}`, {
             headers:{
                 "Authorization" : `Bearer ${token}`
             }})
