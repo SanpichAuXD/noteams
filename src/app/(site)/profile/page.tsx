@@ -24,7 +24,7 @@ type Profile1 = {
 
 type Team1 = {
   team_id: string;
-  teamName: string;
+  team_name: string;
   team_poster: string;
   role: string;
 };
