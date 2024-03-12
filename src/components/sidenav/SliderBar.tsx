@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, User, Users, KanbanSquare,LogOut} from "lucide-react";
 import { cn, formatCookie } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { error } from "console";
 import destr from "destr";
 import { SignupRequest } from "@/type/user";
@@ -23,6 +23,7 @@ export default function Sidenav({ sidebarOpen, setSidebarOpen }: SidenavProps) {
 	// const [cookie, setCookie] = useState('')
 	const router = useRouter();
 	const {toast} = useToast();
+	
 	// const cookie = formatCookie(document.cookie)
     // const {username} = destr<SignupRequest>(cookie) ? destr<SignupRequest>(cookie) : {username : ''};
 	// Create a reference to the sidebar element
@@ -210,6 +211,7 @@ const NavItem = ({
 	sidebarExpanded,
 	callApi
 }: NavItemProps) => {
+	const pathname = usePathname().split('/')[1];
 	return (
 		<li>
 			<Link
@@ -224,11 +226,14 @@ const NavItem = ({
 					{icon}
 
 					<span
-						className={`${
-							sidebarExpanded
-								? "lg:hidden opacity-0 ml-0"
-								: "opacity-100 ml-3 block"
-						}ml-3 whitespace-nowrap `}
+						// className={`${
+						// 	sidebarExpanded
+						// 		? "lg:hidden opacity-0 ml-0"
+						// 		: "opacity-100 ml-3 block"
+						// }ml-3 whitespace-nowrap `}
+						className={cn("ml-3 whitespace-nowrap",
+						sidebarExpanded ? "lg:hidden opacity-0" : "opacity-100 ml-3 block",
+						pathname === (label as string).toLowerCase() ? "font-bold" : "font-normal")}
 					>
 						{label}
 					</span>

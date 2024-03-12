@@ -13,6 +13,8 @@ import { SearchUserInput } from "./SearchUserInput";
 import { useTeam } from "@/store/TeamState";
 import { useQueryClient } from "@tanstack/react-query";
 import { GetTeamType } from "@/type/team";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 type Props = {
 	team_id: string;
 	token: string;
@@ -20,6 +22,7 @@ type Props = {
 
 const TeamNav = ({ team_id, token }: Props) => {
 	const client = useQueryClient();
+	const pathname = usePathname().split('/')[3]
 	const { data } = useTeam(token, team_id);
 	const team = client.getQueryData<GetTeamType>([`team-${team_id}`]);
 	const isAllow = team?.allow_task || team?.user_role === "OWNER";
@@ -78,33 +81,43 @@ const TeamNav = ({ team_id, token }: Props) => {
 				<ul className="flex justify-start items-center">
 					<Link
 						href={`/teams/${team_id}/file`}
-						className="teams-nav-link"
+						className={cn("teams-nav-link",
+						pathname === "file" && "font-bold"
+						)}
 					>
 						File
 					</Link>
 					<Link
 						href={`/teams/${team_id}/kanban`}
-						className="teams-nav-link"
+						className={cn("teams-nav-link",
+						pathname === "kanban" && "font-bold"
+						)}
 					>
 						Board
 					</Link>
 					{team?.user_role === "OWNER" && (
 						<Link
 							href={`/teams/${team_id}/setting`}
-							className="teams-nav-link"
+							className={cn("teams-nav-link",
+							pathname === "setting" && "font-bold"
+							)}
 						>
 							Setting
 						</Link>
 					)}
 					<Link
 						href={`/teams/${team_id}/`}
-						className="teams-nav-link"
+						className={cn("teams-nav-link",
+						pathname === "" && "font-bold"
+						)}
 					>
 						About
 					</Link>
 					<Link
 						href={`/teams/${team_id}/member`}
-						className="teams-nav-link"
+						className={cn("teams-nav-link",
+						pathname === "member" && "font-bold"
+						)}
 					>
 						Member
 					</Link>
