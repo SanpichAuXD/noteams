@@ -24,3 +24,7 @@ npm i
 3. setup and run [backend repository](https://github.com/NatthawutSK/NoTeams-Backend-Devtool)
 4. Set up the environment variables:
    - Add the required environment variables
+5. demo
+https://github.com/SanpichAuXD/noteams/assets/67864773/da6c2835-ec84-4cb7-8191-9b811d1581c9
+
+
