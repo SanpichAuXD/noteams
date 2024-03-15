@@ -25,6 +25,9 @@ npm i
 4. Set up the environment variables:
    - Add the required environment variables
 5. demo
-[![demo](https://github.com/SanpichAuXD/noteams/assets/67864773/da6c2835-ec84-4cb7-8191-9b811d1581c9)]
+
+
+https://github.com/SanpichAuXD/noteams/assets/67864773/d1c85123-19ed-45ba-a2e8-40c72708ddf1
+
 
 
